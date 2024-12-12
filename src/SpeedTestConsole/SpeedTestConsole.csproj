@@ -10,7 +10,10 @@
   <ItemGroup>
     <PackageReference Include="Spectre.Console" Version="0.49.1" />
     <PackageReference Include="Spectre.Console.Cli" Version="0.49.1" />
-    <PackageReference Include="SuchByte.SpeedTestSharp" Version="1.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SpeedTestConsole.Lib\SpeedTestConsole.Lib.csproj" />
   </ItemGroup>
 
 </Project>
