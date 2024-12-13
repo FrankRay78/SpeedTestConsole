@@ -1,6 +1,6 @@
 namespace SpeedTestConsole.Lib;
 
-public class Constants
+public sealed class Constants
 {
     public const string ServersUrl = "http://www.speedtest.net/speedtest-servers.php";
     public const string Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SpeedTestConsole.Lib.Client;
 
-public class SpeedTestClient : ISpeedTestClient
+public sealed class SpeedTestClient : ISpeedTestClient
 {
     public TestStage CurrentStage { get; private set; } = TestStage.Stopped;
     public SpeedUnit SpeedUnit { get; private set; } = SpeedUnit.Kbps;

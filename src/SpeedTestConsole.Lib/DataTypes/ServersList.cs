@@ -1,7 +1,7 @@
 namespace SpeedTestConsole.Lib.DataTypes;
 
 [XmlRoot("settings")]
-public class ServersList
+public sealed class ServersList
 {
     [XmlArray("servers")]
     [XmlArrayItem("server")]
