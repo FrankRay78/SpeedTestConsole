@@ -17,7 +17,6 @@ public sealed class ListServersCommand : AsyncCommand
 
 
         var table = new Table()
-            .Title("Speedtest Servers")
             .Border(TableBorder.Square)
             .BorderColor(Color.Red)
             .AddColumn(new TableColumn("Country"))

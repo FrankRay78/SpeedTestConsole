@@ -8,7 +8,7 @@ app.Configure(config =>
     config.ValidateExamples();
 #endif
 
-    config.SetApplicationName("Speedtest Console");
+    config.SetApplicationName("SpeedTestConsole");
 
     // Register the custom help provider
     config.SetHelpProvider(new CustomHelpProvider(config.Settings));
