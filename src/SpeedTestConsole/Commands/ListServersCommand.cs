@@ -11,8 +11,6 @@ public sealed class ListServersCommand : AsyncCommand
 
     public override async Task<int> ExecuteAsync(CommandContext context)
     {
-        //console.MarkupLine("Speedtest Servers");
-
         ISpeedTestClient speedTestClient = new SpeedTestClient();
 
         var servers = await speedTestClient.GetServersAsync();
@@ -27,14 +25,8 @@ public sealed class ListServersCommand : AsyncCommand
 
         foreach (var server in servers)
         {
-            //console.MarkupLine($"Server: { server.Name } ({ server.Sponsor })");
-
             table.AddRow(server.Name ?? string.Empty, server.Sponsor ?? string.Empty);
         }
-
-        //table.Rows[0].Cells[0].Style = new Style(foreground: Color.Green);
-
-        //table.AddColumn(new TableColumn("Latency"));
 
         console.WriteLine("");
         console.Write(table);

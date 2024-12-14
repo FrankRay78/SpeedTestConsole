@@ -15,10 +15,18 @@ public sealed class SpeedTestClient : ISpeedTestClient
 
     #region Frank
 
+    private Settings settings;
+
+    public SpeedTestClient(Settings? settings = null)
+    {
+        // Dependecy inject the settings to allow unit testing
+        this.settings = settings ?? new Settings();
+    }
+
     public async Task<Server[]> GetServersAsync()
     {
         using var httpClient = GetHttpClient();
-        var serversXml = await httpClient.GetStringAsync(Constants.ServersUrl);
+        var serversXml = await httpClient.GetStringAsync(settings.ServersUrl);
         return serversXml.DeserializeFromXml<ServersList>().Servers ?? Array.Empty<Server>();
     }
 

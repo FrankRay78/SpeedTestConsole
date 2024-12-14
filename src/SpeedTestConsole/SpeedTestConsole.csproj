@@ -16,4 +16,10 @@
     <ProjectReference Include="..\SpeedTestConsole.Lib\SpeedTestConsole.Lib.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="slant.flf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

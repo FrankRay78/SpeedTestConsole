@@ -1,10 +1,5 @@
-﻿using SpeedTestConsole.Commands;
-using SpeedTestConsole.Lib.Client;
-using SpeedTestConsole.Lib.Enums;
-
-
-
-var app = new CommandApp<ListServersCommand>();
+﻿
+var app = new CommandApp();
 
 app.Configure(config =>
 {
@@ -12,11 +7,16 @@ app.Configure(config =>
     config.PropagateExceptions();
     config.ValidateExamples();
 #endif
+
+    config.SetApplicationName("Speedtest Console");
+
+    // Register the custom help provider
+    config.SetHelpProvider(new CustomHelpProvider(config.Settings));
+
+    config.AddCommand<ListServersCommand>("servers");
 });
 
 var result = app.Run(args);
-
-Console.ReadKey();
 
 return result;
 
