@@ -13,6 +13,17 @@ public sealed class SpeedTestClient : ISpeedTestClient
     public event EventHandler<TestStage>? StageChanged;
     public event EventHandler<ProgressInfo>? ProgressChanged;
 
+    #region Frank
+
+    public async Task<Server[]> GetServersAsync()
+    {
+        using var httpClient = GetHttpClient();
+        var serversXml = await httpClient.GetStringAsync(Constants.ServersUrl);
+        return serversXml.DeserializeFromXml<ServersList>().Servers ?? Array.Empty<Server>();
+    }
+
+    #endregion
+
     public async Task<SpeedTestResult> TestSpeedAsync(SpeedUnit speedUnit,
         int parallelTasks = 8,
         bool testLatency = true,
@@ -76,7 +87,7 @@ public sealed class SpeedTestClient : ISpeedTestClient
     private async Task<int> TestServerLatencyAsync(Server server, int tests = 4)
     {
         SetStage(TestStage.Latency);
-        
+
         if (string.IsNullOrWhiteSpace(server.Url))
         {
             throw new NullReferenceException("Server url was null");
@@ -85,7 +96,7 @@ public sealed class SpeedTestClient : ISpeedTestClient
         var latencyUrl = GetBaseUrl(server.Url).Append("latency.txt");
         var stopwatch = new Stopwatch();
         using var httpClient = GetHttpClient();
-        
+
         var test = 1;
         do
         {
@@ -99,14 +110,14 @@ public sealed class SpeedTestClient : ISpeedTestClient
             }
             test++;
         } while (test < tests);
-        
+
         return (int)stopwatch.ElapsedMilliseconds / tests;
     }
-    
+
     private async Task<double> TestUploadSpeedAsync(Server server, int parallelUploads)
     {
         SetStage(TestStage.Upload);
-        
+
         if (string.IsNullOrWhiteSpace(server.Url))
         {
             throw new NullReferenceException("Server url was null");
@@ -125,7 +136,7 @@ public sealed class SpeedTestClient : ISpeedTestClient
     private async Task<double> TestDownloadSpeedAsync(Server server, int parallelDownloads)
     {
         SetStage(TestStage.Download);
-        
+
         if (string.IsNullOrWhiteSpace(server.Url))
         {
             throw new NullReferenceException("Server url was null");
@@ -166,7 +177,7 @@ public sealed class SpeedTestClient : ISpeedTestClient
                                            ((double)timer.ElapsedMilliseconds / 1000)),
                     TotalBytes = size
                 };
-                
+
                 ProgressChanged?.Invoke(this, progressInfo);
 
                 return size;
@@ -183,7 +194,7 @@ public sealed class SpeedTestClient : ISpeedTestClient
         double totalSize = downloadTasks.Sum(task => task.Result);
         return ConvertUnit(totalSize * 8 / 1024 / ((double)timer.ElapsedMilliseconds / 1000));
     }
-    
+
     private static IEnumerable<byte[]> GenerateUploadData()
     {
         var random = new Random();
@@ -228,7 +239,7 @@ public sealed class SpeedTestClient : ISpeedTestClient
         {
             return;
         }
-        
+
         CurrentStage = newStage;
         StageChanged?.Invoke(this, newStage);
     }

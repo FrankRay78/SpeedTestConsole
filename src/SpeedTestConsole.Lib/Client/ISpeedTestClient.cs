@@ -2,6 +2,12 @@ namespace SpeedTestConsole.Lib.Client;
 
 public interface ISpeedTestClient
 {
+    #region Frank
+
+    public Task<Server[]> GetServersAsync();
+
+    #endregion
+
     public TestStage CurrentStage { get; }
     public SpeedUnit SpeedUnit { get; }
     public event EventHandler<TestStage>? StageChanged;
