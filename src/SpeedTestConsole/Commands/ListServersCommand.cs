@@ -15,6 +15,8 @@ public sealed class ListServersCommand : AsyncCommand
 
         var servers = await speedTestClient.GetServersAsync();
 
+        servers = servers.OrderBy(servers => servers.Name).ToArray();
+
 
         var table = new Table()
             .Border(TableBorder.Square)
