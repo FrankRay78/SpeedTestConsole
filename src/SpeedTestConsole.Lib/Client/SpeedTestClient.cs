@@ -59,6 +59,11 @@ public sealed class SpeedTestClient : ISpeedTestClient
         return (int)stopwatch.ElapsedMilliseconds / maximumIterations;
     }
 
+    public async Task<SpeedTestResult> GetDownloadSpeedAsync()
+    {
+        return await TestSpeedAsync(settings.SpeedUnit, settings.DownloadParallelTasks, false, true, false);
+    }
+
     #endregion
 
     public async Task<SpeedTestResult> TestSpeedAsync(SpeedUnit speedUnit,

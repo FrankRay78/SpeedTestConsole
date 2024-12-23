@@ -1,6 +1,4 @@
-﻿using Spectre.Console;
-
-namespace SpeedTestConsole.Commands;
+﻿namespace SpeedTestConsole.Commands;
 
 public sealed class ListServersCommand : AsyncCommand<ListServersCommandSettings>
 {

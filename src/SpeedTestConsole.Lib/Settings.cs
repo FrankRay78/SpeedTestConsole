@@ -9,4 +9,8 @@ public sealed class Settings
     
     //GetServerLatencyAsync
     public int ServerLatencyIterations = 4;
+
+    //GetDownloadSpeedAsync
+    public SpeedUnit SpeedUnit = SpeedUnit.Mbps;
+    public int DownloadParallelTasks = 8;
 }

@@ -14,6 +14,7 @@ app.Configure(config =>
     config.SetHelpProvider(new CustomHelpProvider(config.Settings));
 
     config.AddCommand<ListServersCommand>("servers");
+    config.AddCommand<DownloadSpeedCommand>("download");
 });
 
 var result = app.Run(args);
