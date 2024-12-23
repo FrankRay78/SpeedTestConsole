@@ -30,6 +30,35 @@ public sealed class SpeedTestClient : ISpeedTestClient
         return serversXml.DeserializeFromXml<ServersList>().Servers ?? Array.Empty<Server>();
     }
 
+    public async Task<int> GetServerLatencyAsync(Server server)
+    {
+        if (string.IsNullOrWhiteSpace(server.Url))
+        {
+            throw new NullReferenceException("Server url was null");
+        }
+
+        var latencyUrl = GetBaseUrl(server.Url).Append("latency.txt");
+        var stopwatch = new Stopwatch();
+        using var httpClient = GetHttpClient();
+
+        var iteration = 1;
+        var maximumIterations = settings.ServerLatencyIterations;
+        do
+        {
+            stopwatch.Start();
+            var testString = await httpClient.GetStringAsync(latencyUrl);
+            stopwatch.Stop();
+
+            if (!testString.StartsWith("test=test"))
+            {
+                throw new InvalidOperationException("Server returned incorrect test string for latency.txt");
+            }
+            iteration++;
+        } while (iteration < maximumIterations);
+
+        return (int)stopwatch.ElapsedMilliseconds / maximumIterations;
+    }
+
     #endregion
 
     public async Task<SpeedTestResult> TestSpeedAsync(SpeedUnit speedUnit,

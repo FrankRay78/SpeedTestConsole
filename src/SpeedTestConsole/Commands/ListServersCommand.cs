@@ -1,6 +1,8 @@
-﻿namespace SpeedTestConsole.Commands;
+﻿using Spectre.Console;
 
-public sealed class ListServersCommand : AsyncCommand
+namespace SpeedTestConsole.Commands;
+
+public sealed class ListServersCommand : AsyncCommand<ListServersCommandSettings>
 {
     private IAnsiConsole console;
 
@@ -9,15 +11,28 @@ public sealed class ListServersCommand : AsyncCommand
         this.console = console;
     }
 
-    public override async Task<int> ExecuteAsync(CommandContext context)
+    public override async Task<int> ExecuteAsync(CommandContext context, ListServersCommandSettings settings)
     {
         ISpeedTestClient speedTestClient = new SpeedTestClient();
 
         var servers = await speedTestClient.GetServersAsync();
 
-        servers = servers.OrderBy(servers => servers.Name).ToArray();
+        var serversList = servers.OrderBy(servers => servers.Name).ToList();
 
+        if (settings.ShowLatency == null || !settings.ShowLatency.HasValue || !settings.ShowLatency.Value)
+        {
+            DisplayServers(serversList);
+        }
+        else
+        {
+            await DisplayServersWithLatency(serversList, speedTestClient);
+        }
 
+        return 0;
+    }
+
+    private void DisplayServers(List<Server> servers)
+    {
         var table = new Table()
             .Border(TableBorder.Square)
             .BorderColor(Color.Red)
@@ -31,7 +46,39 @@ public sealed class ListServersCommand : AsyncCommand
 
         console.WriteLine("");
         console.Write(table);
+    }
 
-        return 0;
+    private async Task DisplayServersWithLatency(List<Server> servers, ISpeedTestClient speedTestClient)
+    {
+        var table = new Table()
+            .Border(TableBorder.Square)
+            .BorderColor(Color.Red)
+            .AddColumn(new TableColumn("Country"))
+            .AddColumn(new TableColumn("Sponsor"))
+            .AddColumn(new TableColumn("Latency"));
+
+        // Add the initial server list (without latency)
+        foreach (var server in servers)
+        {
+            table.AddRow(server.Name ?? string.Empty, server.Sponsor ?? string.Empty);
+        }
+
+        console.MarkupLine("Press [yellow]CTRL+C[/] to exit");
+
+        await AnsiConsole.Live(table)
+            .AutoClear(false)
+            .StartAsync(async ctx =>
+            {
+                // Fetch the latency for each server
+                // and update the table as they come back
+                for (int i = 0; i < servers.Count; i++)
+                {
+                    var latency = await speedTestClient.GetServerLatencyAsync(servers[i]);
+
+                    table.UpdateCell(i, 2, $"{latency}ms");
+
+                    ctx.Refresh();
+                }
+            });
     }
 }

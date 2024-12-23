@@ -5,6 +5,7 @@ public interface ISpeedTestClient
     #region Frank
 
     public Task<Server[]> GetServersAsync();
+    public Task<int> GetServerLatencyAsync(Server server);
 
     #endregion
 
