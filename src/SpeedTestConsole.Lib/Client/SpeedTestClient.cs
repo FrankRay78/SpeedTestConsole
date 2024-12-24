@@ -32,13 +32,37 @@ public sealed class SpeedTestClient : ISpeedTestClient
 
     public async Task GetServerLatencyAsync(Server[] servers)
     {
+        // The default timeout for HttpClient is 100 seconds.
+        // ref: https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient.timeout?view=net-9.0
+        var httpTimeout = 100000;
+
         foreach (var server in servers)
         {
-            await GetServerLatencyAsync(server);
+            await GetServerLatencyAsync(server, httpTimeout);
+
+            if (server.Latency != null)
+            {
+                if (server.Latency < httpTimeout)
+                {
+                    // Reduce the http timeout for the next server
+                    // to the fastest latency found so far
+                    // (ie. do not test latency above the fastest value so far)
+                    httpTimeout = server.Latency.Value;
+                }
+            }
         }
     }
 
     public async Task GetServerLatencyAsync(Server server)
+    {
+        // The default timeout for HttpClient is 100 seconds.
+        // ref: https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient.timeout?view=net-9.0
+        var httpTimeout = 100000;
+
+        await GetServerLatencyAsync(server, httpTimeout);
+    }
+
+    public async Task GetServerLatencyAsync(Server server, int httpTimeoutMilliseconds)
     {
         try
         {
@@ -49,7 +73,10 @@ public sealed class SpeedTestClient : ISpeedTestClient
 
             var latencyUrl = GetBaseUrl(server.Url).Append("latency.txt");
             var stopwatch = new Stopwatch();
+
             using var httpClient = GetHttpClient();
+            httpClient.Timeout = TimeSpan.FromMilliseconds(httpTimeoutMilliseconds);
+
 
             var maximumIterations = settings.ServerLatencyIterations;
             var iteration = 1;
