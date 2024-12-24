@@ -1,4 +1,6 @@
-﻿namespace SpeedTestConsole.Commands;
+﻿using SpeedTestConsole.Lib.DataTypes;
+
+namespace SpeedTestConsole.Commands;
 
 public sealed class ListServersCommand : AsyncCommand<ListServersCommandSettings>
 {
@@ -62,7 +64,9 @@ public sealed class ListServersCommand : AsyncCommand<ListServersCommandSettings
             table.AddRow(server.Name ?? string.Empty, server.Sponsor ?? string.Empty);
         }
 
-        console.MarkupLine("Press [yellow]CTRL+C[/] to exit");
+        console.WriteLine("");
+        console.MarkupLine("Press [yellow]CTRL+C[/] to exit.");
+        console.WriteLine("");
 
         await AnsiConsole.Live(table)
             .AutoClear(false)
@@ -72,13 +76,15 @@ public sealed class ListServersCommand : AsyncCommand<ListServersCommandSettings
                 // and update the table as they come back
                 for (int i = 0; i < servers.Count; i++)
                 {
-                    try
-                    {
-                        var latency = await speedTestClient.GetServerLatencyAsync(servers[i]);
+                    var server = servers[i];
 
-                        table.UpdateCell(i, 2, $"{latency}ms");
+                    await speedTestClient.GetServerLatencyAsync(server);
+
+                    if (server.Latency != null)
+                    {
+                        table.UpdateCell(i, 2, $"{server.Latency}ms");
                     }
-                    catch (Exception)
+                    else
                     {
                         table.UpdateCell(i, 2, "-");
                     }

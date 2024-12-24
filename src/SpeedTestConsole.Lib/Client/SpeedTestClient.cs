@@ -30,58 +30,51 @@ public sealed class SpeedTestClient : ISpeedTestClient
         return serversXml.DeserializeFromXml<ServersList>().Servers ?? Array.Empty<Server>();
     }
 
-    public async Task<int> GetServerLatencyAsync(Server server)
+    public async Task GetServerLatencyAsync(Server[] servers)
     {
-        if (string.IsNullOrWhiteSpace(server.Url))
-        {
-            throw new NullReferenceException("Server url was null");
-        }
-
-        var latencyUrl = GetBaseUrl(server.Url).Append("latency.txt");
-        var stopwatch = new Stopwatch();
-        using var httpClient = GetHttpClient();
-
-        var maximumIterations = settings.ServerLatencyIterations;
-        var iteration = 1;
-        do
-        {
-            stopwatch.Start();
-
-            // Exceptions thrown here will propagate to the caller
-            var testString = await httpClient.GetStringAsync(latencyUrl);
-
-            stopwatch.Stop();
-
-            if (!testString.StartsWith("test=test"))
-            {
-                throw new InvalidOperationException("Server returned incorrect test string for latency.txt");
-            }
-
-            iteration++;
-        }
-        while (iteration < maximumIterations);
-
-        return (int)stopwatch.ElapsedMilliseconds / maximumIterations;
-    }
-
-    public async Task<Server?> GetFastestServerByLatency(Server[] servers)
-    {
-        var serverLatency = new Dictionary<Server, int>();
-
         foreach (var server in servers)
         {
-            try
-            {
-                var latency = await GetServerLatencyAsync(server);
-                serverLatency.TryAdd(server, latency);
-            }
-            catch
-            {
-                // ignore this server
-            }
+            await GetServerLatencyAsync(server);
         }
+    }
 
-        return serverLatency.OrderBy(x => x.Value).Select(x => x.Key).FirstOrDefault();
+    public async Task GetServerLatencyAsync(Server server)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(server.Url))
+            {
+                throw new NullReferenceException("Server url was null");
+            }
+
+            var latencyUrl = GetBaseUrl(server.Url).Append("latency.txt");
+            var stopwatch = new Stopwatch();
+            using var httpClient = GetHttpClient();
+
+            var maximumIterations = settings.ServerLatencyIterations;
+            var iteration = 1;
+            do
+            {
+                stopwatch.Start();
+                var testString = await httpClient.GetStringAsync(latencyUrl);
+                stopwatch.Stop();
+
+                if (!testString.StartsWith("test=test"))
+                {
+                    throw new InvalidOperationException("Server returned incorrect test string for latency.txt");
+                }
+
+                iteration++;
+            }
+            while (iteration < maximumIterations);
+
+            // Populate the latency field on the server object to return the result
+            server.Latency = (int)stopwatch.ElapsedMilliseconds / maximumIterations;
+        }
+        catch
+        {
+            // Ignore this server
+        }
     }
 
     public async Task<SpeedTestResult> GetDownloadSpeedAsync(Server server)

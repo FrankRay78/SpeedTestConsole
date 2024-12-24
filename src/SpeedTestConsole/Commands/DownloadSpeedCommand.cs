@@ -1,4 +1,7 @@
-﻿namespace SpeedTestConsole.Commands;
+﻿using SpeedTestConsole.Lib.Client;
+using SpeedTestConsole.Lib.Extensions;
+
+namespace SpeedTestConsole.Commands;
 
 public sealed class DownloadSpeedCommand : AsyncCommand
 {
@@ -15,9 +18,17 @@ public sealed class DownloadSpeedCommand : AsyncCommand
     {
         var servers = await speedTestClient.GetServersAsync();
 
-        var server = await speedTestClient.GetFastestServerByLatency(servers);
+        await speedTestClient.GetServerLatencyAsync(servers);
 
-        Console.WriteLine($"Fastest server: {server!.Sponsor}");
+        var server = servers.GetFastestServerByLatency();
+
+        if (server == null)
+        {
+            console.MarkupLine("[red]No servers available[/]");
+            return 1;
+        }
+
+        Console.WriteLine($"Fastest server: {server.Sponsor} ({server.Latency}ms)");
 
         return 0;
 

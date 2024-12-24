@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SpeedTestConsole": {
+      "commandName": "Project",
+      "commandLineArgs": "servers -l"
+    }
+  }
+}

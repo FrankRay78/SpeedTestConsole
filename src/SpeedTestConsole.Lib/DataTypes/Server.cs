@@ -25,4 +25,14 @@ public sealed class Server
 
     [XmlAttribute("lon")]
     public double Longitude { get; set; }
+
+    /// <summary>
+    /// Latency between client and server
+    /// </summary>
+    /// <remarks>
+    /// Not returned by the Speedtest call to fetch the lest of servers, 
+    /// but used by the client to store the latency (once determined)
+    /// </remarks>
+    [XmlIgnore]
+    public int? Latency { get; set; }
 }
