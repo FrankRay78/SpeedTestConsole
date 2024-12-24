@@ -5,7 +5,7 @@ public interface ISpeedTestClient
     #region Frank
 
     public Task<Server[]> GetServersAsync();
-    public Task GetServerLatencyAsync(Server[] servers);
+    public Task GetServerLatencyAsync(Server[] servers, bool useServerLatencyToReduceHttpClientTimeout);
     public Task GetServerLatencyAsync(Server server);
     public Task GetServerLatencyAsync(Server server, int httpTimeoutMilliseconds);
     public Task<SpeedTestResult> GetDownloadSpeedAsync(Server server);

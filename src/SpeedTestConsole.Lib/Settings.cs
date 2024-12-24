@@ -9,6 +9,11 @@ public sealed class Settings
     public readonly int[] DownloadSizes = { 1500, 2000, 3000, 3500, 4000 };
 
     // GetServerLatencyAsync
+
+    // The default timeout for HttpClient is 100 seconds.
+    // ref: https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient.timeout?view=net-9.0
+    public int HttpTimeoutMilliseconds = 100000;
+
     public int ServerLatencyIterations = 4;
 
     // GetDownloadSpeedAsync

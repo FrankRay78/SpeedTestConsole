@@ -30,19 +30,17 @@ public sealed class SpeedTestClient : ISpeedTestClient
         return serversXml.DeserializeFromXml<ServersList>().Servers ?? Array.Empty<Server>();
     }
 
-    public async Task GetServerLatencyAsync(Server[] servers)
+    public async Task GetServerLatencyAsync(Server[] servers, bool useServerLatencyToReduceHttpClientTimeout = false)
     {
-        // The default timeout for HttpClient is 100 seconds.
-        // ref: https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient.timeout?view=net-9.0
-        var httpTimeout = 100000;
+        var httpTimeout = settings.HttpTimeoutMilliseconds;
 
         foreach (var server in servers)
         {
             await GetServerLatencyAsync(server, httpTimeout);
 
-            if (server.Latency != null)
+            if (useServerLatencyToReduceHttpClientTimeout)
             {
-                if (server.Latency < httpTimeout)
+                if (server.Latency != null && server.Latency < httpTimeout)
                 {
                     // Reduce the http timeout for the next server
                     // to the fastest latency found so far
@@ -55,11 +53,7 @@ public sealed class SpeedTestClient : ISpeedTestClient
 
     public async Task GetServerLatencyAsync(Server server)
     {
-        // The default timeout for HttpClient is 100 seconds.
-        // ref: https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient.timeout?view=net-9.0
-        var httpTimeout = 100000;
-
-        await GetServerLatencyAsync(server, httpTimeout);
+        await GetServerLatencyAsync(server, settings.HttpTimeoutMilliseconds);
     }
 
     public async Task GetServerLatencyAsync(Server server, int httpTimeoutMilliseconds)

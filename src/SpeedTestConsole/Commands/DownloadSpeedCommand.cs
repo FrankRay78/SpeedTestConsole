@@ -18,7 +18,7 @@ public sealed class DownloadSpeedCommand : AsyncCommand
     {
         var servers = await speedTestClient.GetServersAsync();
 
-        await speedTestClient.GetServerLatencyAsync(servers);
+        await speedTestClient.GetServerLatencyAsync(servers, true);
 
         var server = servers.GetFastestServerByLatency();
 
