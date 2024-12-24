@@ -41,30 +41,60 @@ public sealed class SpeedTestClient : ISpeedTestClient
         var stopwatch = new Stopwatch();
         using var httpClient = GetHttpClient();
 
-        var iteration = 1;
         var maximumIterations = settings.ServerLatencyIterations;
+        var iteration = 1;
         do
         {
             stopwatch.Start();
+
+            // Exceptions thrown here will propagate to the caller
             var testString = await httpClient.GetStringAsync(latencyUrl);
+
             stopwatch.Stop();
 
             if (!testString.StartsWith("test=test"))
             {
                 throw new InvalidOperationException("Server returned incorrect test string for latency.txt");
             }
+
             iteration++;
-        } while (iteration < maximumIterations);
+        }
+        while (iteration < maximumIterations);
 
         return (int)stopwatch.ElapsedMilliseconds / maximumIterations;
     }
 
-    public async Task<SpeedTestResult> GetDownloadSpeedAsync()
+    public async Task<Server?> GetFastestServerByLatency(Server[] servers)
+    {
+        var serverLatency = new Dictionary<Server, int>();
+
+        foreach (var server in servers)
+        {
+            try
+            {
+                var latency = await GetServerLatencyAsync(server);
+                serverLatency.TryAdd(server, latency);
+            }
+            catch
+            {
+                // ignore this server
+            }
+        }
+
+        return serverLatency.OrderBy(x => x.Value).Select(x => x.Key).FirstOrDefault();
+    }
+
+    public async Task<SpeedTestResult> GetDownloadSpeedAsync(Server server)
     {
         return await TestSpeedAsync(settings.SpeedUnit, settings.DownloadParallelTasks, false, true, false);
     }
 
     #endregion
+
+
+
+
+
 
     public async Task<SpeedTestResult> TestSpeedAsync(SpeedUnit speedUnit,
         int parallelTasks = 8,

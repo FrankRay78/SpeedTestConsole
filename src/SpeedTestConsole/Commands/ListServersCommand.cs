@@ -3,16 +3,17 @@
 public sealed class ListServersCommand : AsyncCommand<ListServersCommandSettings>
 {
     private IAnsiConsole console;
+    private ISpeedTestClient speedTestClient;
 
-    public ListServersCommand(IAnsiConsole console)
+    public ListServersCommand(IAnsiConsole console, ISpeedTestClient speedTestClient)
     {
         this.console = console;
+        this.speedTestClient = speedTestClient;
+
     }
 
     public override async Task<int> ExecuteAsync(CommandContext context, ListServersCommandSettings settings)
     {
-        ISpeedTestClient speedTestClient = new SpeedTestClient();
-
         var servers = await speedTestClient.GetServersAsync();
 
         var serversList = servers.OrderBy(servers => servers.Name).ToList();
@@ -71,9 +72,16 @@ public sealed class ListServersCommand : AsyncCommand<ListServersCommandSettings
                 // and update the table as they come back
                 for (int i = 0; i < servers.Count; i++)
                 {
-                    var latency = await speedTestClient.GetServerLatencyAsync(servers[i]);
+                    try
+                    {
+                        var latency = await speedTestClient.GetServerLatencyAsync(servers[i]);
 
-                    table.UpdateCell(i, 2, $"{latency}ms");
+                        table.UpdateCell(i, 2, $"{latency}ms");
+                    }
+                    catch (Exception)
+                    {
+                        table.UpdateCell(i, 2, "-");
+                    }
 
                     ctx.Refresh();
                 }

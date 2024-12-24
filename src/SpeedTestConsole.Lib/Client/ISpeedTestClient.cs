@@ -6,7 +6,8 @@ public interface ISpeedTestClient
 
     public Task<Server[]> GetServersAsync();
     public Task<int> GetServerLatencyAsync(Server server);
-    public Task<SpeedTestResult> GetDownloadSpeedAsync();
+    public Task<Server?> GetFastestServerByLatency(Server[] servers);
+    public Task<SpeedTestResult> GetDownloadSpeedAsync(Server server);
 
     #endregion
 
