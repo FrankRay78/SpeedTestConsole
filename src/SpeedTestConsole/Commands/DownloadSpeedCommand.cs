@@ -18,24 +18,22 @@ public sealed class DownloadSpeedCommand : AsyncCommand
     {
         var servers = await speedTestClient.GetServersAsync();
 
-        await speedTestClient.GetServerLatencyAsync(servers, true);
+        var fastest = await speedTestClient.GetFastestServerByLatencyAsync(servers);
 
-        var server = servers.GetFastestServerByLatency();
-
-        if (server == null)
+        if (fastest == null)
         {
             console.MarkupLine("[red]No servers available[/]");
             return 1;
         }
 
-        Console.WriteLine($"Fastest server: {server.Sponsor} ({server.Latency}ms)");
+        Console.WriteLine($"Fastest server: {fastest.Value.server.Sponsor} ({fastest.Value.latency}ms)");
 
         return 0;
 
-        var result = await speedTestClient.GetDownloadSpeedAsync(server);
+        //var result = await speedTestClient.GetDownloadSpeedAsync(server);
 
-        Console.WriteLine($"Download: {result.DownloadSpeed} {result.SpeedUnit}");
+        //Console.WriteLine($"Download: {result.DownloadSpeed} {result.SpeedUnit}");
 
-        return 0;
+        //return 0;
     }
 }

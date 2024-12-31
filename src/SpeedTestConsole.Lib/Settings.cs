@@ -12,7 +12,7 @@ public sealed class Settings
 
     // The default timeout for HttpClient is 100 seconds.
     // ref: https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient.timeout?view=net-9.0
-    public int HttpTimeoutMilliseconds = 100000;
+    public int DefaultHttpTimeoutMilliseconds = 100000;
 
     public int ServerLatencyIterations = 4;
 
