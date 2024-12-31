@@ -30,34 +30,15 @@ public sealed class SpeedTestClient : ISpeedTestClient
         return serversXml.DeserializeFromXml<ServersList>().Servers ?? Array.Empty<Server>();
     }
 
-    public async Task GetServerLatencyAsync(Server[] servers, bool useServerLatencyToReduceHttpClientTimeout = false)
+    public async Task<int?> GetServerLatencyAsync(Server server)
     {
-        var httpTimeout = settings.HttpTimeoutMilliseconds;
-
-        foreach (var server in servers)
-        {
-            await GetServerLatencyAsync(server, httpTimeout);
-
-            if (useServerLatencyToReduceHttpClientTimeout)
-            {
-                if (server.Latency != null && server.Latency < httpTimeout)
-                {
-                    // Reduce the http timeout for the next server
-                    // to the fastest latency found so far
-                    // (ie. do not test latency above the fastest value so far)
-                    httpTimeout = server.Latency.Value;
-                }
-            }
-        }
+        return await GetServerLatencyAsync(server, settings.DefaultHttpTimeoutMilliseconds);
     }
 
-    public async Task GetServerLatencyAsync(Server server)
+    public async Task<int?> GetServerLatencyAsync(Server server, int httpTimeoutMilliseconds)
     {
-        await GetServerLatencyAsync(server, settings.HttpTimeoutMilliseconds);
-    }
+        int? latency = null;
 
-    public async Task GetServerLatencyAsync(Server server, int httpTimeoutMilliseconds)
-    {
         try
         {
             if (string.IsNullOrWhiteSpace(server.Url))
@@ -89,13 +70,39 @@ public sealed class SpeedTestClient : ISpeedTestClient
             }
             while (iteration < maximumIterations);
 
-            // Populate the latency field on the server object to return the result
-            server.Latency = (int)stopwatch.ElapsedMilliseconds / maximumIterations;
+            // Calculate the average server latency
+            latency = (int)stopwatch.ElapsedMilliseconds / maximumIterations;
         }
         catch
         {
             // Ignore this server
         }
+
+        return latency;
+    }
+
+    public async Task<(Server server, int latency)?> GetFastestServerByLatencyAsync(Server[] servers)
+    {
+        int fastestLatency = settings.DefaultHttpTimeoutMilliseconds;
+        Server? fastestServer = null;
+
+        foreach (var server in servers)
+        {
+            // nb. Bump up the fastest latency/timeout by a slight margin
+            var httpTimeoutMilliseconds = (fastestLatency == settings.DefaultHttpTimeoutMilliseconds ? fastestLatency : (int)(fastestLatency * 1.5));
+
+            var latency = await GetServerLatencyAsync(server, httpTimeoutMilliseconds);
+
+            if (latency != null && latency < fastestLatency)
+            {
+                // Reduce the http timeout to the new fastest latency
+                // (ie. do not wait for servers that are slower)
+                fastestLatency = latency.Value;
+                fastestServer = server;
+            }
+        }
+
+        return (fastestServer == null ? null : (fastestServer, fastestLatency));
     }
 
     public async Task<SpeedTestResult> GetDownloadSpeedAsync(Server server)
