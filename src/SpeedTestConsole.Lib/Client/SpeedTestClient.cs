@@ -107,10 +107,112 @@ public sealed class SpeedTestClient : ISpeedTestClient
 
     public async Task<SpeedTestResult> GetDownloadSpeedAsync(Server server)
     {
-        var downloadSpeed = await TestDownloadSpeedAsync(server, settings.DownloadParallelTasks);
+        if (string.IsNullOrWhiteSpace(server.Url))
+        {
+            throw new NullReferenceException("Server url was null");
+        }
+
+        int parallelDownloads = settings.DownloadParallelTasks;
+
+        var testData = GenerateDownloadUrls(server.Url);
+
+        var downloadSpeed = await GenericTestSpeedAsync(testData, async (client, url) =>
+        {
+            var data = await client.GetStringAsync(url).ConfigureAwait(false);
+            return data.Length;
+        },
+        parallelDownloads);
 
         return new SpeedTestResult(settings.SpeedUnit, downloadSpeed, -1, -1);
     }
+
+    private async Task<double> GenericTestSpeedAsync<T>(IEnumerable<T> testData,
+        Func<HttpClient, T, Task<int>> doWork,
+        int parallelTasks)
+    {
+        var timer = new Stopwatch();
+        var throttler = new SemaphoreSlim(parallelTasks);
+
+        timer.Start();
+        long totalBytesProcessed = 0;
+
+        var downloadTasks = testData.Select(async data =>
+        {
+            await throttler.WaitAsync().ConfigureAwait(false);
+            using var httpClient = GetHttpClient();
+            try
+            {
+                var size = await doWork(httpClient, data).ConfigureAwait(false);
+
+                Interlocked.Add(ref totalBytesProcessed, size);
+                var progressInfo = new ProgressInfo
+                {
+                    BytesProcessed = totalBytesProcessed,
+                    Speed = ConvertUnit(totalBytesProcessed * 8.0 / 1024.0 /
+                                           ((double)timer.ElapsedMilliseconds / 1000)),
+                    TotalBytes = size
+                };
+
+                ProgressChanged?.Invoke(this, progressInfo);
+
+                return size;
+            }
+            finally
+            {
+                throttler.Release();
+            }
+        }).ToArray();
+
+        await Task.WhenAll(downloadTasks);
+        timer.Stop();
+
+        double totalSize = downloadTasks.Sum(task => task.Result);
+        return ConvertUnit(totalSize * 8 / 1024 / ((double)timer.ElapsedMilliseconds / 1000));
+    }
+
+    #region Helper Functions
+
+    private double ConvertUnit(double value)
+    {
+        return SpeedUnit switch
+        {
+            SpeedUnit.Kbps => value,
+            SpeedUnit.KBps => value / 8.0,
+            SpeedUnit.Mbps => value / 1024.0,
+            SpeedUnit.MBps => value / 8192.0,
+            _ => throw new InvalidEnumArgumentException("Not a valid SpeedUnit")
+        };
+    }
+
+    private IEnumerable<string> GenerateDownloadUrls(string serverUrl)
+    {
+        var downloadUrl = GetBaseUrl(serverUrl).Append("random{0}x{0}.jpg?r={1}");
+
+        foreach (var downloadSize in Constants.DownloadSizes)
+        {
+            for (var i = 0; i < 4; i++)
+            {
+                yield return string.Format(downloadUrl, downloadSize, i);
+            }
+        }
+    }
+
+    private static string GetBaseUrl(string url)
+    {
+        return new Uri(new Uri(url), ".").OriginalString;
+    }
+
+    private static HttpClient GetHttpClient()
+    {
+        var httpClient = new HttpClient();
+        httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36");
+        httpClient.DefaultRequestHeaders.Accept.ParseAdd("text/html, application/xhtml+xml, */*");
+        httpClient.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue { NoCache = true };
+        return httpClient;
+    }
+
+    #endregion
 
     #endregion
 
@@ -220,7 +322,7 @@ public sealed class SpeedTestClient : ISpeedTestClient
 
         var testData = GenerateUploadData();
 
-        return await TestSpeedAsync(testData, async (client, uploadData) =>
+        return await GenericTestSpeedAsync(testData, async (client, uploadData) =>
         {
             using var content = new ByteArrayContent(uploadData);
             await client.PostAsync(server.Url, content).ConfigureAwait(false);
@@ -239,56 +341,14 @@ public sealed class SpeedTestClient : ISpeedTestClient
 
         var testData = GenerateDownloadUrls(server.Url);
 
-        return await TestSpeedAsync(testData, async (client, url) =>
+        return await GenericTestSpeedAsync(testData, async (client, url) =>
         {
             var data = await client.GetStringAsync(url).ConfigureAwait(false);
             return data.Length;
         }, parallelDownloads);
     }
 
-    private async Task<double> TestSpeedAsync<T>(IEnumerable<T> testData,
-        Func<HttpClient, T, Task<int>> doWork,
-        int parallelTasks)
-    {
-        var timer = new Stopwatch();
-        var throttler = new SemaphoreSlim(parallelTasks);
 
-        timer.Start();
-        long totalBytesProcessed = 0;
-
-        var downloadTasks = testData.Select(async data =>
-        {
-            await throttler.WaitAsync().ConfigureAwait(false);
-            using var httpClient = GetHttpClient();
-            try
-            {
-                var size = await doWork(httpClient, data).ConfigureAwait(false);
-
-                Interlocked.Add(ref totalBytesProcessed, size);
-                var progressInfo = new ProgressInfo
-                {
-                    BytesProcessed = totalBytesProcessed,
-                    Speed = ConvertUnit(totalBytesProcessed * 8.0 / 1024.0 /
-                                           ((double)timer.ElapsedMilliseconds / 1000)),
-                    TotalBytes = size
-                };
-
-                ProgressChanged?.Invoke(this, progressInfo);
-
-                return size;
-            }
-            finally
-            {
-                throttler.Release();
-            }
-        }).ToArray();
-
-        await Task.WhenAll(downloadTasks);
-        timer.Stop();
-
-        double totalSize = downloadTasks.Sum(task => task.Result);
-        return ConvertUnit(totalSize * 8 / 1024 / ((double)timer.ElapsedMilliseconds / 1000));
-    }
 
     private static IEnumerable<byte[]> GenerateUploadData()
     {
@@ -316,18 +376,6 @@ public sealed class SpeedTestClient : ISpeedTestClient
         return result;
     }
 
-    private double ConvertUnit(double value)
-    {
-        return SpeedUnit switch
-        {
-            SpeedUnit.Kbps => value,
-            SpeedUnit.KBps => value / 8.0,
-            SpeedUnit.Mbps => value / 1024.0,
-            SpeedUnit.MBps => value / 8192.0,
-            _ => throw new InvalidEnumArgumentException("Not a valid SpeedUnit")
-        };
-    }
-
     private void SetStage(TestStage newStage)
     {
         if (CurrentStage == newStage)
@@ -337,32 +385,5 @@ public sealed class SpeedTestClient : ISpeedTestClient
 
         CurrentStage = newStage;
         StageChanged?.Invoke(this, newStage);
-    }
-
-    private IEnumerable<string> GenerateDownloadUrls(string serverUrl)
-    {
-        var downloadUrl = GetBaseUrl(serverUrl).Append("random{0}x{0}.jpg?r={1}");
-        foreach (var downloadSize in Constants.DownloadSizes)
-        {
-            for (var i = 0; i < 4; i++)
-            {
-                yield return string.Format(downloadUrl, downloadSize, i);
-            }
-        }
-    }
-
-    private static string GetBaseUrl(string url)
-    {
-        return new Uri(new Uri(url), ".").OriginalString;
-    }
-
-    private static HttpClient GetHttpClient()
-    {
-        var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36");
-        httpClient.DefaultRequestHeaders.Accept.ParseAdd("text/html, application/xhtml+xml, */*");
-        httpClient.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue {NoCache = true};
-        return httpClient;
     }
 }
