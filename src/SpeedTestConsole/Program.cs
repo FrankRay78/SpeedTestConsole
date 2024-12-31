@@ -50,7 +50,7 @@ speedTestClient.ProgressChanged += (_, info) =>
             Console.Write("Uploaded ");
             break;
     }
-    Console.WriteLine($"{info.BytesProcessed} bytes @ {info.Speed} {speedTestClient.SpeedUnit}");
+    Console.WriteLine($"{info.TotalBytesProcessed} bytes @ {info.Speed} {speedTestClient.SpeedUnit}");
 };
 
 var result = await speedTestClient.TestSpeedAsync(SpeedUnit.Mbps, parallelTasks: 1, testLatency: true, testDownload: false, testUpload: false);

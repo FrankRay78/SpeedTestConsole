@@ -7,4 +7,3 @@ public sealed class Constants
     public const int MaxUploadSize = 6;
     public static readonly int[] DownloadSizes = { 1500, 2000, 3000, 3500, 4000 };
 }
-
