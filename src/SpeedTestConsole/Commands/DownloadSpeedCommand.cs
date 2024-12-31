@@ -28,12 +28,10 @@ public sealed class DownloadSpeedCommand : AsyncCommand
 
         Console.WriteLine($"Fastest server: {fastest.Value.server.Sponsor} ({fastest.Value.latency}ms)");
 
+        var result = await speedTestClient.GetDownloadSpeedAsync(fastest.Value.server);
+
+        Console.WriteLine($"Download: {result.DownloadSpeed} {result.SpeedUnit}");
+
         return 0;
-
-        //var result = await speedTestClient.GetDownloadSpeedAsync(server);
-
-        //Console.WriteLine($"Download: {result.DownloadSpeed} {result.SpeedUnit}");
-
-        //return 0;
     }
 }

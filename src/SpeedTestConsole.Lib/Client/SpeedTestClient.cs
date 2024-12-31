@@ -107,7 +107,9 @@ public sealed class SpeedTestClient : ISpeedTestClient
 
     public async Task<SpeedTestResult> GetDownloadSpeedAsync(Server server)
     {
-        return await TestSpeedAsync(settings.SpeedUnit, settings.DownloadParallelTasks, false, true, false);
+        var downloadSpeed = await TestDownloadSpeedAsync(server, settings.DownloadParallelTasks);
+
+        return new SpeedTestResult(settings.SpeedUnit, downloadSpeed, -1, -1);
     }
 
     #endregion
