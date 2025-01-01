@@ -2,34 +2,49 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SpeedTestConsole.Lib.Client;
 
 public sealed class SpeedTestClient : ISpeedTestClient
 {
-    public event EventHandler<ProgressInfo>? ProgressChanged;
-
-    private Settings settings;
-
-    public SpeedTestClient(Settings? settings = null)
+    /// <summary>
+    /// Configuration unique to Ookla Speedtest.
+    /// </summary>
+    /// <see cref="https://www.speedtest.net/"/>
+    public sealed class Constants
     {
-        // Dependecy inject the settings to allow unit testing
-        this.settings = settings ?? new Settings();
+        public const string ServersUrl = "http://www.speedtest.net/speedtest-servers.php";
+
+        // These are used to generate the url for downloading test files.
+        // eg: random1500x1500.jpg
+        public static readonly int[] DownloadSizes = { 1500, 2000, 3000, 3500, 4000 };
+
+        // The default timeout for HttpClient is 100 seconds.
+        // ref: https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient.timeout?view=net-9.0
+        public const int DefaultHttpTimeoutMilliseconds = 100000;
+
+        public const int LatencyTestIterations = 4;
+        public const int DownloadParallelTasks = 8;
+    }
+
+    public SpeedTestClient()
+    {
     }
 
     public async Task<Server[]> GetServersAsync()
     {
         using var httpClient = GetHttpClient();
-        var serversXml = await httpClient.GetStringAsync(settings.ServersUrl);
+        var serversXml = await httpClient.GetStringAsync(Constants.ServersUrl);
         return serversXml.DeserializeFromXml<ServersList>().Servers ?? Array.Empty<Server>();
     }
 
     public async Task<int?> GetServerLatencyAsync(Server server)
     {
-        return await GetServerLatencyAsync(server, settings.DefaultHttpTimeoutMilliseconds);
+        return await GetServerLatencyAsync(server, Constants.DefaultHttpTimeoutMilliseconds, Constants.LatencyTestIterations);
     }
 
-    private async Task<int?> GetServerLatencyAsync(Server server, int httpTimeoutMilliseconds)
+    private async Task<int?> GetServerLatencyAsync(Server server, int httpTimeoutMilliseconds, int testIterations)
     {
         int? latency = null;
 
@@ -47,7 +62,6 @@ public sealed class SpeedTestClient : ISpeedTestClient
             httpClient.Timeout = TimeSpan.FromMilliseconds(httpTimeoutMilliseconds);
 
 
-            var maximumIterations = settings.ServerLatencyIterations;
             var iteration = 1;
             do
             {
@@ -62,10 +76,10 @@ public sealed class SpeedTestClient : ISpeedTestClient
 
                 iteration++;
             }
-            while (iteration < maximumIterations);
+            while (iteration < testIterations);
 
             // Calculate the average server latency
-            latency = (int)stopwatch.ElapsedMilliseconds / maximumIterations;
+            latency = (int)stopwatch.ElapsedMilliseconds / testIterations;
         }
         catch
         {
@@ -77,15 +91,15 @@ public sealed class SpeedTestClient : ISpeedTestClient
 
     public async Task<(Server server, int latency)?> GetFastestServerByLatencyAsync(Server[] servers)
     {
-        int fastestLatency = settings.DefaultHttpTimeoutMilliseconds;
+        int fastestLatency = Constants.DefaultHttpTimeoutMilliseconds;
         Server? fastestServer = null;
 
         foreach (var server in servers)
         {
             // nb. Bump up the fastest latency/timeout by a slight margin
-            var httpTimeoutMilliseconds = (fastestLatency == settings.DefaultHttpTimeoutMilliseconds ? fastestLatency : (int)(fastestLatency * 1.5));
+            var httpTimeoutMilliseconds = (fastestLatency == Constants.DefaultHttpTimeoutMilliseconds ? fastestLatency : (int)(fastestLatency * 1.5));
 
-            var latency = await GetServerLatencyAsync(server, httpTimeoutMilliseconds);
+            var latency = await GetServerLatencyAsync(server, httpTimeoutMilliseconds, Constants.LatencyTestIterations);
 
             if (latency != null && latency < fastestLatency)
             {
@@ -99,31 +113,30 @@ public sealed class SpeedTestClient : ISpeedTestClient
         return (fastestServer == null ? null : (fastestServer, fastestLatency));
     }
 
-    public async Task<SpeedTestResult> GetDownloadSpeedAsync(Server server)
+    public async Task<(long bytesProcessed, long elapsedMilliseconds)> GetDownloadSpeedAsync(Server server)
     {
         if (string.IsNullOrWhiteSpace(server.Url))
         {
             throw new NullReferenceException("Server url was null");
         }
 
-        int parallelDownloads = settings.DownloadParallelTasks;
+        var downloadUrls = GenerateDownloadUrls(server.Url);
 
-        var testData = GenerateDownloadUrls(server.Url);
-
-        var downloadSpeed = await GenericTestSpeedAsync(testData, async (client, url) =>
+        // Download content from a specified URL and return the size of the data in bytes.
+        Func<HttpClient, string, Task<int>> DownloadAndMeasureAsync = async (client, url) =>
         {
             var data = await client.GetStringAsync(url).ConfigureAwait(false);
             return data.Length;
-        },
-        parallelDownloads,
-        settings.SpeedUnit);
+        };
 
-        return new SpeedTestResult(settings.SpeedUnit, downloadSpeed, -1, -1);
+        var downloadResult = await GenericTestSpeedAsync(downloadUrls, DownloadAndMeasureAsync, Constants.DownloadParallelTasks);
+
+        return downloadResult;
     }
 
-    private async Task<double> GenericTestSpeedAsync<T>(IEnumerable<T> testData,
+    private async Task<(long bytesProcessed, long elapsedMilliseconds)> GenericTestSpeedAsync<T>(IEnumerable<T> testData,
         Func<HttpClient, T, Task<int>> doWork,
-        int parallelTasks, SpeedUnit speedUnit)
+        int parallelTasks)
     {
         var timer = new Stopwatch();
         var throttler = new SemaphoreSlim(parallelTasks);
@@ -131,28 +144,24 @@ public sealed class SpeedTestClient : ISpeedTestClient
         timer.Start();
         long totalBytesProcessed = 0;
 
+        // Create a list of tasks that will download the test data.
         var downloadTasks = testData.Select(async data =>
         {
+            // Each task must acquire a "permit" before it can start executing.
             await throttler.WaitAsync().ConfigureAwait(false);
+
             using var httpClient = GetHttpClient();
             try
             {
                 var size = await doWork(httpClient, data).ConfigureAwait(false);
 
                 Interlocked.Add(ref totalBytesProcessed, size);
-                var progressInfo = new ProgressInfo
-                {
-                    TotalBytesProcessed = totalBytesProcessed,
-                    Speed = ConvertUnit(speedUnit, totalBytesProcessed * 8.0 / 1024.0 / ((double)timer.ElapsedMilliseconds / 1000)),
-                    BytesProcessed = size
-                };
-
-                ProgressChanged?.Invoke(this, progressInfo);
 
                 return size;
             }
             finally
             {
+                // Release the permit so other waiting tasks can proceed.
                 throttler.Release();
             }
         }).ToArray();
@@ -160,24 +169,19 @@ public sealed class SpeedTestClient : ISpeedTestClient
         await Task.WhenAll(downloadTasks);
         timer.Stop();
 
-        double totalSize = downloadTasks.Sum(task => task.Result);
-        return ConvertUnit(speedUnit, totalSize * 8 / 1024 / ((double)timer.ElapsedMilliseconds / 1000));
+        return (totalBytesProcessed, timer.ElapsedMilliseconds);
     }
 
     #region Helper Functions
 
-    private static double ConvertUnit(SpeedUnit speedUnit, double value)
-    {
-        return speedUnit switch
-        {
-            SpeedUnit.Kbps => value,
-            SpeedUnit.KBps => value / 8.0,
-            SpeedUnit.Mbps => value / 1024.0,
-            SpeedUnit.MBps => value / 8192.0,
-            _ => throw new InvalidEnumArgumentException("Not a valid SpeedUnit")
-        };
-    }
-
+    /// <summary>
+    /// Generates numerous download URLs for the speed test.
+    /// </summary>
+    /// <example>
+    /// http://manchester.speedtest.boundlessnetworks.uk:8080/speedtest/random1500x1500.jpg?r=0
+    /// http://manchester.speedtest.boundlessnetworks.uk:8080/speedtest/random1500x1500.jpg?r=1
+    /// ...
+    /// </example>
     private static IEnumerable<string> GenerateDownloadUrls(string serverUrl)
     {
         var downloadUrl = GetBaseUrl(serverUrl).Append("random{0}x{0}.jpg?r={1}");

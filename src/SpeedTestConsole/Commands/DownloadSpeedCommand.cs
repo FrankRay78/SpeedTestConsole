@@ -30,7 +30,9 @@ public sealed class DownloadSpeedCommand : AsyncCommand
 
         var result = await speedTestClient.GetDownloadSpeedAsync(fastest.Value.server);
 
-        Console.WriteLine($"Download: {result.DownloadSpeed} {result.SpeedUnit}");
+        Console.WriteLine($"{result.bytesProcessed} bytes downloaded in {result.elapsedMilliseconds} ms");
+
+        // TODO: Calculate the download speed
 
         return 0;
     }
