@@ -18,7 +18,8 @@ public sealed class SpeedTestClient : ISpeedTestClient
 
         // These are used to generate the url for downloading test files.
         // eg: random1500x1500.jpg
-        public static readonly int[] DownloadSizes = { 1500, 2000, 3000, 3500, 4000 };
+        //public static readonly int[] DownloadSizes = { 1500, 2000, 3000, 3500, 4000 };
+        public static readonly int[] DownloadSizes = { 1500 };
 
         // The default timeout for HttpClient is 100 seconds.
         // ref: https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient.timeout?view=net-9.0
@@ -115,6 +116,11 @@ public sealed class SpeedTestClient : ISpeedTestClient
 
     public async Task<(long bytesProcessed, long elapsedMilliseconds)> GetDownloadSpeedAsync(Server server)
     {
+        return await GetDownloadSpeedAsync(server, (int _) => { });
+    }
+
+    public async Task<(long bytesProcessed, long elapsedMilliseconds)> GetDownloadSpeedAsync(Server server, Action<int> UpdateProgress)
+    {
         if (string.IsNullOrWhiteSpace(server.Url))
         {
             throw new NullReferenceException("Server url was null");
@@ -129,20 +135,24 @@ public sealed class SpeedTestClient : ISpeedTestClient
             return data.Length;
         };
 
-        var downloadResult = await GenericTestSpeedAsync(downloadUrls, DownloadAndMeasureAsync, Constants.DownloadParallelTasks);
+        var downloadResult = await GenericTestSpeedAsync(downloadUrls, DownloadAndMeasureAsync, UpdateProgress, Constants.DownloadParallelTasks);
 
         return downloadResult;
     }
 
     private async Task<(long bytesProcessed, long elapsedMilliseconds)> GenericTestSpeedAsync<T>(IEnumerable<T> testData,
         Func<HttpClient, T, Task<int>> doWork,
+        Action<int> UpdateProgress,
         int parallelTasks)
     {
+        object lockObject = new();
+        int completedCount = 0;
+        int totalCount = testData.Count();
+
         var timer = new Stopwatch();
         var throttler = new SemaphoreSlim(parallelTasks);
 
         timer.Start();
-        long totalBytesProcessed = 0;
 
         // Create a list of tasks that will download the test data.
         var downloadTasks = testData.Select(async data =>
@@ -155,7 +165,14 @@ public sealed class SpeedTestClient : ISpeedTestClient
             {
                 var size = await doWork(httpClient, data).ConfigureAwait(false);
 
-                Interlocked.Add(ref totalBytesProcessed, size);
+                lock (lockObject)
+                {
+                    completedCount++;
+
+                    var percentageComplete = (int)(((double)completedCount / totalCount) * 100);
+
+                    UpdateProgress(percentageComplete);
+                }
 
                 return size;
             }
@@ -169,6 +186,7 @@ public sealed class SpeedTestClient : ISpeedTestClient
         await Task.WhenAll(downloadTasks);
         timer.Stop();
 
+        long totalBytesProcessed = downloadTasks.Sum(task => task.Result);
         return (totalBytesProcessed, timer.ElapsedMilliseconds);
     }
 
