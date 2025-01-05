@@ -1,4 +1,5 @@
-﻿using SpeedTestConsole.Lib.Client;
+﻿using ByteSizeLib;
+using SpeedTestConsole.Lib.Client;
 using SpeedTestConsole.Lib.Extensions;
 
 namespace SpeedTestConsole.Commands;
@@ -30,7 +31,7 @@ public sealed class DownloadSpeedCommand : AsyncCommand
 
         Action<int> UpdateProgress = (int percentageComplete) =>
         {
-            //TODO: Update the progress bar
+            // TODO: Update the progress bar
 
             console.MarkupLine($"Complete: {percentageComplete}%");
         };
@@ -39,7 +40,10 @@ public sealed class DownloadSpeedCommand : AsyncCommand
 
         Console.WriteLine($"{result.bytesProcessed} bytes downloaded in {result.elapsedMilliseconds} ms");
 
-        // TODO: Calculate the download speed
+        // Calculate the download speed
+        var sizePerSecond = ByteSize.FromBytes(result.bytesProcessed / ((double)result.elapsedMilliseconds / 1000));
+
+        Console.WriteLine($"Speed: {sizePerSecond.ToString()}/s");
 
         return 0;
     }
