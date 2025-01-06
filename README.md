@@ -40,3 +40,4 @@ Project Link: [https://github.com/FrankRay78/SpeedTestConsole](https://github.co
 * [Spectre.Console](https://github.com/spectreconsole/spectre.console)
 * [SpeedTestSharp](https://github.com/manuelmayer-dev/SpeedTestSharp)
 * [Best-README-Template](https://github.com/othneildrew/Best-README-Template)
+* [Standard Readme](https://github.com/RichardLitt/standard-readme)
