@@ -1,6 +1,6 @@
 namespace SpeedTestConsole.Lib.DataTypes;
 
-public sealed class Server
+public sealed class Server : IServer
 {
     [XmlAttribute("id")]
     public int Id { get; set; }

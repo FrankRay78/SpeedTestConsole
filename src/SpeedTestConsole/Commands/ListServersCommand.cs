@@ -33,7 +33,7 @@ public sealed class ListServersCommand : AsyncCommand<ListServersCommandSettings
         return 0;
     }
 
-    private void DisplayServers(List<Server> servers)
+    private void DisplayServers(List<IServer> servers)
     {
         var table = new Table()
             .Border(TableBorder.Square)
@@ -50,7 +50,7 @@ public sealed class ListServersCommand : AsyncCommand<ListServersCommandSettings
         console.Write(table);
     }
 
-    private async Task DisplayServersWithLatency(List<Server> servers, ISpeedTestClient speedTestClient)
+    private async Task DisplayServersWithLatency(List<IServer> servers, ISpeedTestClient speedTestClient)
     {
         var table = new Table()
             .Border(TableBorder.Square)

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace SpeedTestConsole.Lib.Client;
 
+/// <summary>
+/// An Ookla Speedtest implementation of the <see cref="ISpeedTestClient"/> interface.
+/// </summary>
 public sealed class SpeedTestClient : ISpeedTestClient
 {
     /// <summary>
@@ -33,19 +36,19 @@ public sealed class SpeedTestClient : ISpeedTestClient
     {
     }
 
-    public async Task<Server[]> GetServersAsync()
+    public async Task<IServer[]> GetServersAsync()
     {
         using var httpClient = GetHttpClient();
         var serversXml = await httpClient.GetStringAsync(Constants.ServersUrl);
         return serversXml.DeserializeFromXml<ServersList>().Servers ?? Array.Empty<Server>();
     }
 
-    public async Task<int?> GetServerLatencyAsync(Server server)
+    public async Task<int?> GetServerLatencyAsync(IServer server)
     {
         return await GetServerLatencyAsync(server, Constants.DefaultHttpTimeoutMilliseconds, Constants.LatencyTestIterations);
     }
 
-    private async Task<int?> GetServerLatencyAsync(Server server, int httpTimeoutMilliseconds, int testIterations)
+    private async Task<int?> GetServerLatencyAsync(IServer server, int httpTimeoutMilliseconds, int testIterations)
     {
         int? latency = null;
 
@@ -90,10 +93,10 @@ public sealed class SpeedTestClient : ISpeedTestClient
         return latency;
     }
 
-    public async Task<(Server server, int latency)?> GetFastestServerByLatencyAsync(Server[] servers)
+    public async Task<(IServer server, int latency)?> GetFastestServerByLatencyAsync(IServer[] servers)
     {
         int fastestLatency = Constants.DefaultHttpTimeoutMilliseconds;
-        Server? fastestServer = null;
+        IServer? fastestServer = null;
 
         foreach (var server in servers)
         {
@@ -114,12 +117,12 @@ public sealed class SpeedTestClient : ISpeedTestClient
         return (fastestServer == null ? null : (fastestServer, fastestLatency));
     }
 
-    public async Task<(long bytesProcessed, long elapsedMilliseconds)> GetDownloadSpeedAsync(Server server)
+    public async Task<(long bytesProcessed, long elapsedMilliseconds)> GetDownloadSpeedAsync(IServer server)
     {
         return await GetDownloadSpeedAsync(server, (int _) => { });
     }
 
-    public async Task<(long bytesProcessed, long elapsedMilliseconds)> GetDownloadSpeedAsync(Server server, Action<int> UpdateProgress)
+    public async Task<(long bytesProcessed, long elapsedMilliseconds)> GetDownloadSpeedAsync(IServer server, Action<int> UpdateProgress)
     {
         if (string.IsNullOrWhiteSpace(server.Url))
         {
