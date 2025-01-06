@@ -18,10 +18,8 @@ public sealed class SpeedTestClient : ISpeedTestClient
 
         // These are used to generate the url for downloading test files.
         // eg: random1500x1500.jpg
-        //public static readonly int[] DownloadSizes = { 1500, 2000, 3000, 3500, 4000 };
-        public static readonly int[] DownloadSizes = { 1500 };
-        //public const int DownloadSizeIterations = 4;
-        public const int DownloadSizeIterations = 1;
+        public static readonly int[] DownloadSizes = { 1500, 2000, 3000, 3500, 4000 };
+        public const int DownloadSizeIterations = 4;
 
         // The default timeout for HttpClient is 100 seconds.
         // ref: https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient.timeout?view=net-9.0
@@ -165,8 +163,6 @@ public sealed class SpeedTestClient : ISpeedTestClient
             using var httpClient = GetHttpClient();
             try
             {
-                Console.WriteLine($"Downloading {data}");
-
                 var size = await doWork(httpClient, data).ConfigureAwait(false);
 
                 lock (lockObject)

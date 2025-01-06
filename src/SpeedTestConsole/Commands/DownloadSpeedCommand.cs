@@ -19,6 +19,7 @@ public sealed class DownloadSpeedCommand : AsyncCommand
     {
         var servers = await speedTestClient.GetServersAsync();
 
+
         var fastest = await speedTestClient.GetFastestServerByLatencyAsync(servers);
 
         if (fastest == null)
@@ -29,14 +30,32 @@ public sealed class DownloadSpeedCommand : AsyncCommand
 
         Console.WriteLine($"Fastest server: {fastest.Value.server.Sponsor} ({fastest.Value.latency}ms)");
 
-        Action<int> UpdateProgress = (int percentageComplete) =>
-        {
-            // TODO: Update the progress bar
 
-            console.MarkupLine($"Complete: {percentageComplete}%");
-        };
+        (long bytesProcessed, long elapsedMilliseconds) result = (0, 0);
 
-        var result = await speedTestClient.GetDownloadSpeedAsync(fastest.Value.server, UpdateProgress);
+        // Show download progress
+        await console.Progress()
+            .AutoClear(false)
+            .Columns(
+            [
+                    new TaskDescriptionColumn(),
+                    new ProgressBarColumn(),
+                    new PercentageColumn(),
+            ])
+            .StartAsync(async progress =>
+            {
+                var downloadProgressTask = progress.AddTask("Downloading", autoStart: true, maxValue: 100);
+
+                Action<int> UpdateProgress = (int percentageComplete) =>
+                {
+                    // Update the progress bar
+                    downloadProgressTask.Value = percentageComplete;
+                };
+
+                result = await speedTestClient.GetDownloadSpeedAsync(fastest.Value.server, UpdateProgress);
+
+            });
+
 
         Console.WriteLine($"{result.bytesProcessed} bytes downloaded in {result.elapsedMilliseconds} ms");
 
