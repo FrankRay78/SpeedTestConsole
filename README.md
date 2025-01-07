@@ -1,6 +1,12 @@
 # SpeedTestConsole
 An internet speedtest CLI application; made beautiful with [Spectre.Console](https://github.com/spectreconsole/spectre.console).
 
+<p align="left">
+    <a href="https://github.com/FrankRay78/SpeedTestConsole/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
+    -
+    <a href="https://github.com/FrankRay78/SpeedTestConsole/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
+</p>
+
 <br />
 
 
