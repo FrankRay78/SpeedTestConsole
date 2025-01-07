@@ -33,9 +33,15 @@ See the [open issues](https://github.com/FrankRay78/SpeedTestConsole/issues) for
 <br />
 
 
+## License
+
+Distributed under the MIT license. See `LICENSE` for more information.
+
+<br />
+
 
 ## Contact
-Frank Ray - [LinkedIn](https://www.linkedin.com/in/frankray/) - info@bettersoftware.uk
+Frank Ray - [LinkedIn](https://www.linkedin.com/in/frankray/) - [Better Software UK](https://bettersoftware.uk)
 
 Project Link: [https://github.com/FrankRay78/SpeedTestConsole](https://github.com/FrankRay78/SpeedTestConsole)
 
