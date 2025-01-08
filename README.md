@@ -11,9 +11,25 @@ An internet speedtest CLI application; made beautiful with [Spectre.Console](htt
 
 
 ## About The Project
-The obligatory screenshot:
+A cross-platform command-line application for performing network speed tests, including server discovery, latency measurement, download and upload speed testing. The https://speedtest.net servers are used under the hood.
+
+The obligatory screenshot (as of 6 Jan 2025):
 
 ![Splash_screen](https://github.com/user-attachments/assets/b1befbc3-2c32-40e6-8281-2beae59a3b25)
+
+<br />
+
+
+## Getting Started
+I use Windows 10, Visual Studio 2022 Community, and .Net 8.0 to develop and build the codebase - you will need the same, or similar.
+
+Then clone this repository locally and build.
+
+<br />
+
+
+## Usage
+`SpeedTestConsole --help` will display detailed usage instructions.
 
 <br />
 
@@ -33,8 +49,13 @@ See the [open issues](https://github.com/FrankRay78/SpeedTestConsole/issues) for
 <br />
 
 
-## License
+##  Contributing
+Feel free to dive in! [Open an issue](https://github.com/FrankRay78/SpeedTestConsole/issues/new/choose) or submit a PR.
 
+<br />
+
+
+## License
 Distributed under the MIT license. See `LICENSE` for more information.
 
 <br />
