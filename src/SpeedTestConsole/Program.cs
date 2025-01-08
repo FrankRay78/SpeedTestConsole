@@ -7,21 +7,7 @@ var registrar = new TypeRegistrar(registrations);
 
 var app = new CommandApp(registrar);
 
-app.Configure(config =>
-{
-#if DEBUG
-    config.PropagateExceptions();
-    config.ValidateExamples();
-#endif
-
-    config.SetApplicationName("SpeedTestConsole");
-
-    // Register the custom help provider
-    config.SetHelpProvider(new CustomHelpProvider(config.Settings));
-
-    config.AddCommand<ListServersCommand>("servers").WithDescription("Show the nearest speed test servers");
-    config.AddCommand<DownloadSpeedCommand>("download").WithDescription("Perform an internet download speed test");
-});
+app.Configure(CommandAppHelper.ConfigureAction);
 
 var result = app.Run(args);
 
