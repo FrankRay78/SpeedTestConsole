@@ -19,8 +19,8 @@ app.Configure(config =>
     // Register the custom help provider
     config.SetHelpProvider(new CustomHelpProvider(config.Settings));
 
-    config.AddCommand<ListServersCommand>("servers");
-    config.AddCommand<DownloadSpeedCommand>("download");
+    config.AddCommand<ListServersCommand>("servers").WithDescription("Show the nearest speed test servers");
+    config.AddCommand<DownloadSpeedCommand>("download").WithDescription("Perform an internet download speed test");
 });
 
 var result = app.Run(args);
