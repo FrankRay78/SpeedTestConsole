@@ -7,16 +7,12 @@ public class SpeedTestConsoleTests
     {
         // Given
         var app = new CommandAppTester();
-        app.Configure(CommandAppHelper.ConfigureAction);
+        app.Configure(Program.ConfigureAction);
 
         // When
         var result = app.Run();
 
-
-        var settings = new VerifySettings();
-        settings.UseDirectory("Expectations");
-
         // Then
-        await Verify(result.Output, settings);
+        await Verify(result.Output);
     }
 }
