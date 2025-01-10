@@ -28,7 +28,10 @@ public static class Program
     public static int Main(string[] args)
     {
         var registrations = new ServiceCollection();
-        registrations.AddSingleton<ISpeedTestClient, SpeedTestClient>();
+        
+        registrations.AddSingleton<ISpeedTestClient, SpeedTestStub>();
+        //registrations.AddSingleton<ISpeedTestClient, SpeedTestClient>();
+
         var registrar = new TypeRegistrar(registrations);
 
         var app = new CommandApp(registrar);
@@ -40,19 +43,3 @@ public static class Program
         return result;
     }
 }
-
-
-//using Microsoft.Extensions.DependencyInjection;
-//using SpeedTestConsole.DependencyInjection;
-
-//var registrations = new ServiceCollection();
-//registrations.AddSingleton<ISpeedTestClient, SpeedTestClient>();
-//var registrar = new TypeRegistrar(registrations);
-
-//var app = new CommandApp(registrar);
-
-//app.Configure(CommandAppHelper.ConfigureAction);
-
-//var result = app.Run(args);
-
-//return result;

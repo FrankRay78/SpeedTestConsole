@@ -1,0 +1,7 @@
+﻿┌───────────────┬────────────────┐
+│ Country       │ Sponsor        │
+├───────────────┼────────────────┤
+│ Test Server 1 │ Test Sponsor 1 │
+│ Test Server 2 │ Test Sponsor 2 │
+│ Test Server 3 │ Test Sponsor 3 │
+└───────────────┴────────────────┘

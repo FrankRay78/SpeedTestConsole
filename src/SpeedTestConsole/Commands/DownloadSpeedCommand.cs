@@ -4,7 +4,7 @@ using SpeedTestConsole.Lib.Extensions;
 
 namespace SpeedTestConsole.Commands;
 
-public sealed class DownloadSpeedCommand : AsyncCommand
+public sealed class DownloadSpeedCommand : AsyncCommand<DownloadSpeedCommandSettings>
 {
     private IAnsiConsole console;
     private ISpeedTestClient speedTestClient;
@@ -15,7 +15,7 @@ public sealed class DownloadSpeedCommand : AsyncCommand
         this.speedTestClient = speedTestClient;
     }
 
-    public override async Task<int> ExecuteAsync(CommandContext context)
+    public override async Task<int> ExecuteAsync(CommandContext context, DownloadSpeedCommandSettings settings)
     {
         var servers = await speedTestClient.GetServersAsync();
 
