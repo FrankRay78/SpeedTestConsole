@@ -28,7 +28,7 @@ public sealed class DownloadSpeedCommand : AsyncCommand<DownloadSpeedCommandSett
             return 1;
         }
 
-        Console.WriteLine($"Fastest server: {fastest.Value.server.Sponsor} ({fastest.Value.latency}ms)");
+        console.WriteLine($"Fastest server: {fastest.Value.server.Sponsor} ({fastest.Value.latency}ms)");
 
 
         (long bytesProcessed, long elapsedMilliseconds) result = (0, 0);
@@ -57,12 +57,12 @@ public sealed class DownloadSpeedCommand : AsyncCommand<DownloadSpeedCommandSett
             });
 
 
-        Console.WriteLine($"{result.bytesProcessed} bytes downloaded in {result.elapsedMilliseconds} ms");
+        console.WriteLine($"{result.bytesProcessed} bytes downloaded in {result.elapsedMilliseconds} ms");
 
         // Calculate the download speed
         var sizePerSecond = ByteSize.FromBytes(result.bytesProcessed / ((double)result.elapsedMilliseconds / 1000));
 
-        Console.WriteLine($"Speed: {sizePerSecond.ToString()}/s");
+        console.WriteLine($"Speed: {sizePerSecond.ToString()}/s");
 
         return 0;
     }

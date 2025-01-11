@@ -17,17 +17,24 @@ public sealed class ListServersCommand : AsyncCommand<ListServersCommandSettings
 
     public override async Task<int> ExecuteAsync(CommandContext context, ListServersCommandSettings settings)
     {
-        var servers = await speedTestClient.GetServersAsync();
-
-        var serversList = servers.OrderBy(servers => servers.Name).ToList();
-
-        if (settings.ShowLatency == null || !settings.ShowLatency.HasValue || !settings.ShowLatency.Value)
+        try
         {
-            DisplayServers(serversList);
+            var servers = await speedTestClient.GetServersAsync();
+
+            var serversList = servers.OrderBy(servers => servers.Name).ToList();
+
+            if (settings.ShowLatency == null || !settings.ShowLatency.HasValue || !settings.ShowLatency.Value)
+            {
+                DisplayServers(serversList);
+            }
+            else
+            {
+                await DisplayServersWithLatency(serversList, speedTestClient);
+            }
         }
-        else
+        catch (Exception ex)
         {
-            await DisplayServersWithLatency(serversList, speedTestClient);
+            return 1;
         }
 
         return 0;

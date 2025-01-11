@@ -11,12 +11,8 @@ public static class Program
     /// </remarks>
     internal static Action<IConfigurator> ConfigureAction = (config =>
     {
-#if DEBUG
-        config.PropagateExceptions();
-        config.ValidateExamples();
-#endif
-
         config.SetApplicationName("SpeedTestConsole");
+        config.ValidateExamples();
 
         // Register the custom help provider
         config.SetHelpProvider(new CustomHelpProvider(config.Settings));
@@ -27,12 +23,17 @@ public static class Program
 
     public static int Main(string[] args)
     {
-        var registrations = new ServiceCollection();
-        
-        registrations.AddSingleton<ISpeedTestClient, SpeedTestStub>();
-        //registrations.AddSingleton<ISpeedTestClient, SpeedTestClient>();
+        //var mock = new SpeedTestMock
+        //{
+        //    GetServersAsyncFunc = () => throw new HttpRequestException("Could not open socket")
+        //};
 
-        var registrar = new TypeRegistrar(registrations);
+        //var registrar = new TypeRegistrar();
+        //registrar.RegisterInstance(typeof(ISpeedTestClient), mock);
+
+        var registrar = new TypeRegistrar();
+        //registrar.Register(typeof(ISpeedTestClient), typeof(SpeedTestClient));
+        registrar.Register(typeof(ISpeedTestClient), typeof(SpeedTestStub));
 
         var app = new CommandApp(registrar);
 

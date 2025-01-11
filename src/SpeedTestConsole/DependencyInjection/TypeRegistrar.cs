@@ -11,6 +11,12 @@ public sealed class TypeRegistrar : ITypeRegistrar
         this.services = services;
     }
 
+    public TypeRegistrar()
+    {
+        // Create a new service collection
+        this.services = new ServiceCollection();
+    }
+
     public ITypeResolver Build()
     {
         return new TypeResolver(services.BuildServiceProvider());
