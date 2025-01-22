@@ -71,7 +71,7 @@ public class SpeedTestConsoleTests
         await Verify(result.Output);
     }
 
-    [Fact (Skip = "Spectre.Console throws 'System.ObjectDisposedException : Cannot write to a closed TextWriter.'")]
+    [Fact]
     public async Task Should_Handle_Unknown_Exceptions()
     {
         // Given
