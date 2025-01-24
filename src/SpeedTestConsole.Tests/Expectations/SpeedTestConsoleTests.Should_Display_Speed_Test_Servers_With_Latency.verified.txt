@@ -1,4 +1,5 @@
-﻿Press CTRL+C to exit.
+﻿
+Press CTRL+C to exit.
 
 ┌───────────────┬────────────────┬─────────┐
 │ Country       │ Sponsor        │ Latency │

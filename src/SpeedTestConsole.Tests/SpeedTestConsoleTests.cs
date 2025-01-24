@@ -10,7 +10,7 @@ public class SpeedTestConsoleTests
     public async Task Should_Display_Help_When_Run_With_No_Arguments()
     {
         // Given
-        var app = new CommandAppTester();
+        var app = new CommandAppTester(new CommandAppTesterSettings { TrimConsoleOutput = false });
         app.Configure(Program.ConfigureAction);
 
         // When
@@ -27,7 +27,7 @@ public class SpeedTestConsoleTests
         var registrar = new TypeRegistrar();
         registrar.Register(typeof(ISpeedTestClient), typeof(SpeedTestStub));
 
-        var app = new CommandAppTester(registrar);
+        var app = new CommandAppTester(registrar, new CommandAppTesterSettings { TrimConsoleOutput = false });
         app.Configure(Program.ConfigureAction);
 
         // When
@@ -44,7 +44,7 @@ public class SpeedTestConsoleTests
         var registrar = new TypeRegistrar();
         registrar.Register(typeof(ISpeedTestClient), typeof(SpeedTestStub));
 
-        var app = new CommandAppTester(registrar);
+        var app = new CommandAppTester(registrar, new CommandAppTesterSettings { TrimConsoleOutput = false });
         app.Configure(Program.ConfigureAction);
 
         // When
@@ -61,7 +61,7 @@ public class SpeedTestConsoleTests
         var registrar = new TypeRegistrar();
         registrar.Register(typeof(ISpeedTestClient), typeof(SpeedTestStub));
 
-        var app = new CommandAppTester(registrar);
+        var app = new CommandAppTester(registrar, new CommandAppTesterSettings { TrimConsoleOutput = false });
         app.Configure(Program.ConfigureAction);
 
         // When
@@ -83,7 +83,7 @@ public class SpeedTestConsoleTests
         var registrar = new TypeRegistrar();
         registrar.RegisterInstance(typeof(ISpeedTestClient), mock);
 
-        var app = new CommandAppTester(registrar);
+        var app = new CommandAppTester(registrar, new CommandAppTesterSettings { TrimConsoleOutput = false });
         app.Configure(Program.ConfigureAction);
 
         // When
