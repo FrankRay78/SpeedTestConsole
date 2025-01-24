@@ -11,7 +11,9 @@ An internet speed test CLI application; made beautiful with [Spectre.Console](ht
 
 
 ## About The Project
-A cross-platform command-line application for performing network speed tests, including server discovery, latency measurement, download and upload speed testing. The https://speedtest.net servers are used under the hood.
+A cross-platform command-line application for performing network speed tests, including server discovery, latency measurement, and download speed testing. 
+
+SpeedTestConsole is not endorsed by or related to [Speedtest by Ookla](https://www.speedtest.net/) in any way, although their servers are used under the hood.
 
 The obligatory screenshot (as of 6 Jan 2025):
 
@@ -50,7 +52,12 @@ See the [open issues](https://github.com/FrankRay78/SpeedTestConsole/issues) for
 
 
 ##  Contributing
-Feel free to dive in! [Open an issue](https://github.com/FrankRay78/SpeedTestConsole/issues/new/choose) or submit a PR.
+> [!IMPORTANT]\
+> I'm not currently accepting pull requests for this project. 
+
+You can contribute by [opening a new issue](https://github.com/FrankRay78/SpeedTestConsole/issues/new/choose) or commenting on existing issues, and you are most welcome to fork the repository for your own purposes. 
+
+But please **don't be offended** if I close or delete issues as I see fit.
 
 <br />
 
