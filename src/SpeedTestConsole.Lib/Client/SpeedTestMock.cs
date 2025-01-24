@@ -6,11 +6,11 @@
 public class SpeedTestMock : ISpeedTestClient
 {
     // Delegates for method behavior
-    public Func<Task<IServer[]>> GetServersAsyncFunc { get; set; }
-    public Func<IServer, Task<int?>> GetServerLatencyAsyncFunc { get; set; }
-    public Func<IServer[], Task<(IServer server, int latency)?>> GetFastestServerByLatencyAsyncFunc { get; set; }
-    public Func<IServer, Task<(long bytesProcessed, long elapsedMilliseconds)>> GetDownloadSpeedAsyncFunc { get; set; }
-    public Func<IServer, Action<int>, Task<(long bytesProcessed, long elapsedMilliseconds)>> GetDownloadSpeedWithProgressAsyncFunc { get; set; }
+    public Func<Task<IServer[]>>? GetServersAsyncFunc { get; set; }
+    public Func<IServer, Task<int?>>? GetServerLatencyAsyncFunc { get; set; }
+    public Func<IServer[], Task<(IServer server, int latency)?>>? GetFastestServerByLatencyAsyncFunc { get; set; }
+    public Func<IServer, Task<(long bytesProcessed, long elapsedMilliseconds)>>? GetDownloadSpeedAsyncFunc { get; set; }
+    public Func<IServer, Action<int>, Task<(long bytesProcessed, long elapsedMilliseconds)>>? GetDownloadSpeedWithProgressAsyncFunc { get; set; }
 
     public Task<IServer[]> GetServersAsync()
     {

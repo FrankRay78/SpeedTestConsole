@@ -17,24 +17,17 @@ public sealed class ListServersCommand : AsyncCommand<ListServersCommandSettings
 
     public override async Task<int> ExecuteAsync(CommandContext context, ListServersCommandSettings settings)
     {
-        try
+        var servers = await speedTestClient.GetServersAsync();
+
+        var serversList = servers.OrderBy(servers => servers.Name).ToList();
+
+        if (settings.ShowLatency == null || !settings.ShowLatency.HasValue || !settings.ShowLatency.Value)
         {
-            var servers = await speedTestClient.GetServersAsync();
-
-            var serversList = servers.OrderBy(servers => servers.Name).ToList();
-
-            if (settings.ShowLatency == null || !settings.ShowLatency.HasValue || !settings.ShowLatency.Value)
-            {
-                DisplayServers(serversList);
-            }
-            else
-            {
-                await DisplayServersWithLatency(serversList, speedTestClient);
-            }
+            DisplayServers(serversList);
         }
-        catch (Exception ex)
+        else
         {
-            return 1;
+            await DisplayServersWithLatency(serversList, speedTestClient);
         }
 
         return 0;
@@ -76,7 +69,7 @@ public sealed class ListServersCommand : AsyncCommand<ListServersCommandSettings
         console.MarkupLine("Press [yellow]CTRL+C[/] to exit.");
         console.WriteLine("");
 
-        await AnsiConsole.Live(table)
+        await console.Live(table)
             .AutoClear(false)
             .StartAsync(async ctx =>
             {

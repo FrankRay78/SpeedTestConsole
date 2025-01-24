@@ -37,7 +37,7 @@ public class SpeedTestConsoleTests
         await Verify(result.Output);
     }
 
-    [Fact (Skip = "Spectre.Console throws 'The handle is invalid.'")]
+    [Fact]
     public async Task Should_Display_Speed_Test_Servers_With_Latency()
     {
         // Given
