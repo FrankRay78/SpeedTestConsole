@@ -1,5 +1,5 @@
 # SpeedTestConsole
-An internet speed test CLI application; made beautiful with [Spectre.Console](https://github.com/spectreconsole/spectre.console).
+An internet speed test CLI application; made beautiful with [Spectre.Console](https://github.com/spectreconsole/spectre.console). 
 
 <p align="left">
     <a href="https://github.com/FrankRay78/SpeedTestConsole/issues/new?labels=needs%20triage,bug&template=bug-report---.md">Report Bug</a>
@@ -18,6 +18,14 @@ SpeedTestConsole is not endorsed by or related to [Speedtest by Ookla](https://w
 The obligatory screenshot (as of 6 Jan 2025):
 
 ![Splash_screen](https://github.com/user-attachments/assets/b1befbc3-2c32-40e6-8281-2beae59a3b25)
+
+<br />
+
+
+## Background
+The idea for this project came from my experience as the Spectre.Console CLI sub-system maintainer, whilst never having used the library for my own production quality application. My motivation is to become expert at developing excellent command line applications, following best practices like the [Command Line Interface Guidelines](https://clig.dev/), and then taking the experience back into my maintainer role. 
+
+This is also known as 'dogfooding' in the tech industry ie. using your own product before expecting others to do the same.
 
 <br />
 
