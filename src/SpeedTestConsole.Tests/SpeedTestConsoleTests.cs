@@ -17,6 +17,7 @@ public class SpeedTestConsoleTests
         var result = await app.RunAsync();
 
         // Then
+        Assert.Equal(0, result.ExitCode);
         await Verify(result.Output);
     }
 
@@ -34,6 +35,7 @@ public class SpeedTestConsoleTests
         var result = await app.RunAsync("servers");
 
         // Then
+        Assert.Equal(0, result.ExitCode);
         await Verify(result.Output);
     }
 
@@ -51,6 +53,7 @@ public class SpeedTestConsoleTests
         var result = await app.RunAsync("servers", "-l");
 
         // Then
+        Assert.Equal(0, result.ExitCode);
         await Verify(result.Output);
     }
 
@@ -68,6 +71,7 @@ public class SpeedTestConsoleTests
         var result = await app.RunAsync("download");
 
         // Then
+        Assert.Equal(0, result.ExitCode);
         await Verify(result.Output);
     }
 
@@ -90,6 +94,7 @@ public class SpeedTestConsoleTests
         var result = await app.RunAsync("download");
 
         // Then
+        Assert.Equal(-1, result.ExitCode);
         await Verify(result.Output);
     }
 }
