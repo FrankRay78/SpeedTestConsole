@@ -4,7 +4,7 @@ using SpeedTestConsole.Lib.Extensions;
 
 namespace SpeedTestConsole.Commands;
 
-public sealed class DownloadSpeedCommand : AsyncCommand
+public sealed class DownloadSpeedCommand : AsyncCommand<DownloadSpeedCommandSettings>
 {
     private IAnsiConsole console;
     private ISpeedTestClient speedTestClient;
@@ -15,7 +15,7 @@ public sealed class DownloadSpeedCommand : AsyncCommand
         this.speedTestClient = speedTestClient;
     }
 
-    public override async Task<int> ExecuteAsync(CommandContext context)
+    public override async Task<int> ExecuteAsync(CommandContext context, DownloadSpeedCommandSettings settings)
     {
         var servers = await speedTestClient.GetServersAsync();
 
@@ -24,11 +24,10 @@ public sealed class DownloadSpeedCommand : AsyncCommand
 
         if (fastest == null)
         {
-            console.MarkupLine("[red]No servers available[/]");
-            return 1;
+            throw new Exception("No servers available");
         }
 
-        Console.WriteLine($"Fastest server: {fastest.Value.server.Sponsor} ({fastest.Value.latency}ms)");
+        console.WriteLine($"Fastest server: {fastest.Value.server.Sponsor} ({fastest.Value.latency}ms)");
 
 
         (long bytesProcessed, long elapsedMilliseconds) result = (0, 0);
@@ -57,12 +56,12 @@ public sealed class DownloadSpeedCommand : AsyncCommand
             });
 
 
-        Console.WriteLine($"{result.bytesProcessed} bytes downloaded in {result.elapsedMilliseconds} ms");
+        console.WriteLine($"{result.bytesProcessed} bytes downloaded in {result.elapsedMilliseconds} ms");
 
         // Calculate the download speed
         var sizePerSecond = ByteSize.FromBytes(result.bytesProcessed / ((double)result.elapsedMilliseconds / 1000));
 
-        Console.WriteLine($"Speed: {sizePerSecond.ToString()}/s");
+        console.WriteLine($"Speed: {sizePerSecond.ToString()}/s");
 
         return 0;
     }

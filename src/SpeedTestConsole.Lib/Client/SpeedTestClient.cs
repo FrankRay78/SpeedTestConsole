@@ -40,7 +40,7 @@ public sealed class SpeedTestClient : ISpeedTestClient
     {
         using var httpClient = GetHttpClient();
         var serversXml = await httpClient.GetStringAsync(Constants.ServersUrl);
-        return serversXml.DeserializeFromXml<ServersList>().Servers ?? Array.Empty<Server>();
+        return serversXml.DeserializeFromXml<ServersList>()?.Servers ?? Array.Empty<Server>();
     }
 
     public async Task<int?> GetServerLatencyAsync(IServer server)

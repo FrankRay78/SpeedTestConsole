@@ -69,7 +69,7 @@ public sealed class ListServersCommand : AsyncCommand<ListServersCommandSettings
         console.MarkupLine("Press [yellow]CTRL+C[/] to exit.");
         console.WriteLine("");
 
-        await AnsiConsole.Live(table)
+        await console.Live(table)
             .AutoClear(false)
             .StartAsync(async ctx =>
             {

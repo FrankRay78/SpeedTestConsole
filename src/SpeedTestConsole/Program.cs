@@ -1,28 +1,51 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SpeedTestConsole.DependencyInjection;
 
-var registrations = new ServiceCollection();
-registrations.AddSingleton<ISpeedTestClient, SpeedTestClient>();
-var registrar = new TypeRegistrar(registrations);
-
-var app = new CommandApp(registrar);
-
-app.Configure(config =>
+public static class Program
 {
-#if DEBUG
-    config.PropagateExceptions();
-    config.ValidateExamples();
-#endif
+    /// <summary>
+    /// The configure action for the CommandApp.
+    /// </summary>
+    /// <remarks>
+    /// Extracted here so the testing project can reuse the production configuration.
+    /// </remarks>
+    internal static Action<IConfigurator> ConfigureAction = (config =>
+    {
+        config.SetApplicationName("SpeedTestConsole");
+        config.ValidateExamples();
 
-    config.SetApplicationName("SpeedTestConsole");
+        // Register the custom help provider
+        config.SetHelpProvider(new CustomHelpProvider(config.Settings));
 
-    // Register the custom help provider
-    config.SetHelpProvider(new CustomHelpProvider(config.Settings));
+        config.AddCommand<ListServersCommand>("servers").WithDescription("Show the nearest speed test servers");
+        config.AddCommand<DownloadSpeedCommand>("download").WithDescription("Perform an internet download speed test");
+    });
 
-    config.AddCommand<ListServersCommand>("servers");
-    config.AddCommand<DownloadSpeedCommand>("download");
-});
+    public static int Main(string[] args)
+    {
+        //// Uncomment the following lines to test the exception handling:
+        //
+        //var mock = new SpeedTestMock
+        //{
+        //    GetServersAsyncFunc = () => throw new HttpRequestException("Could not open socket")
+        //};
+        //
+        //var registrar = new TypeRegistrar();
+        //registrar.RegisterInstance(typeof(ISpeedTestClient), mock);
 
-var result = app.Run(args);
+        //// Uncomment the following lines to perform a fake speed test:
+        //var registrar = new TypeRegistrar();
+        //registrar.Register(typeof(ISpeedTestClient), typeof(SpeedTestStub));
 
-return result;
+        var registrar = new TypeRegistrar();
+        registrar.Register(typeof(ISpeedTestClient), typeof(SpeedTestClient));
+
+        var app = new CommandApp(registrar);
+
+        app.Configure(ConfigureAction);
+
+        var result = app.Run(args);
+
+        return result;
+    }
+}
