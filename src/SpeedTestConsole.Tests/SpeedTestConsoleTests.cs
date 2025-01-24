@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using SpeedTestConsole.DependencyInjection;
-using System.Runtime.Serialization;
+﻿using SpeedTestConsole.DependencyInjection;
 
 namespace SpeedTestConsole.Tests;
 
@@ -54,6 +52,30 @@ public class SpeedTestConsoleTests
 
         // Then
         Assert.Equal(0, result.ExitCode);
+        await Verify(result.Output);
+    }
+
+    [Fact]
+    public async Task Should_Handle_No_Download_Servers_Available_Test()
+    {
+        // Given
+        var mock = new SpeedTestMock
+        {
+            GetServersAsyncFunc = () => Task.FromResult(Array.Empty<IServer>()),
+            GetFastestServerByLatencyAsyncFunc = servers => Task.FromResult<(IServer server, int latency)?>(null),
+        };
+
+        var registrar = new TypeRegistrar();
+        registrar.RegisterInstance(typeof(ISpeedTestClient), mock);
+
+        var app = new CommandAppTester(registrar, new CommandAppTesterSettings { TrimConsoleOutput = false });
+        app.Configure(Program.ConfigureAction);
+
+        // When
+        var result = await app.RunAsync("download");
+
+        // Then
+        Assert.Equal(-1, result.ExitCode);
         await Verify(result.Output);
     }
 

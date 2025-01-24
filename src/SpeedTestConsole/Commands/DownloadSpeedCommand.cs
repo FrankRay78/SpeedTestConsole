@@ -24,8 +24,7 @@ public sealed class DownloadSpeedCommand : AsyncCommand<DownloadSpeedCommandSett
 
         if (fastest == null)
         {
-            console.MarkupLine("[red]No servers available[/]");
-            return 1;
+            throw new Exception("No servers available");
         }
 
         console.WriteLine($"Fastest server: {fastest.Value.server.Sponsor} ({fastest.Value.latency}ms)");
