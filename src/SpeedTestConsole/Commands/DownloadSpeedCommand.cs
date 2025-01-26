@@ -58,10 +58,9 @@ public sealed class DownloadSpeedCommand : AsyncCommand<DownloadSpeedCommandSett
 
         console.WriteLine($"{result.bytesProcessed} bytes downloaded in {result.elapsedMilliseconds} ms");
 
-        // Calculate the download speed
-        var sizePerSecond = ByteSize.FromBytes(result.bytesProcessed / ((double)result.elapsedMilliseconds / 1000));
+        var speedString = result.GetSpeedString();
 
-        console.WriteLine($"Speed: {sizePerSecond.ToString()}/s");
+        console.WriteLine(speedString);
 
         return 0;
     }

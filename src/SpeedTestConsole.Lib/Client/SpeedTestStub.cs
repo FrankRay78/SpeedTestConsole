@@ -32,15 +32,18 @@ public class SpeedTestStub : ISpeedTestClient
 
     public Task<(long bytesProcessed, long elapsedMilliseconds)> GetDownloadSpeedAsync(IServer server)
     {
-        return Task.FromResult<(long bytesProcessed, long elapsedMilliseconds)>((1000, 1000));
+        return GetDownloadSpeedAsync(server, _ => { });
     }
 
     public Task<(long bytesProcessed, long elapsedMilliseconds)> GetDownloadSpeedAsync(IServer server, Action<int> updateProgress)
     {
-        updateProgress(25);
-        updateProgress(50);
-        updateProgress(75);
-        updateProgress(100);
+        if (updateProgress is not null)
+        {
+            updateProgress(25);
+            updateProgress(50);
+            updateProgress(75);
+            updateProgress(100);
+        }
 
         return Task.FromResult<(long bytesProcessed, long elapsedMilliseconds)>((1000, 1000));
     }

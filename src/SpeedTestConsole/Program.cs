@@ -23,22 +23,11 @@ public static class Program
 
     public static int Main(string[] args)
     {
-        //// Uncomment the following lines to test the exception handling:
-        //
-        //var mock = new SpeedTestMock
-        //{
-        //    GetServersAsyncFunc = () => throw new HttpRequestException("Could not open socket")
-        //};
-        //
-        //var registrar = new TypeRegistrar();
-        //registrar.RegisterInstance(typeof(ISpeedTestClient), mock);
-
-        //// Uncomment the following lines to perform a fake speed test:
-        //var registrar = new TypeRegistrar();
-        //registrar.Register(typeof(ISpeedTestClient), typeof(SpeedTestStub));
-
         var registrar = new TypeRegistrar();
-        registrar.Register(typeof(ISpeedTestClient), typeof(SpeedTestClient));
+        registrar.Register(typeof(ISpeedTestClient), typeof(SpeedTestStub));
+
+        //var registrar = new TypeRegistrar();
+        //registrar.Register(typeof(ISpeedTestClient), typeof(SpeedTestClient));
 
         var app = new CommandApp(registrar);
 
