@@ -1,6 +1,5 @@
 ﻿using ByteSizeLib;
-using SpeedTestConsole.Lib.Client;
-using SpeedTestConsole.Lib.Extensions;
+using Humanizer;
 
 namespace SpeedTestConsole.Commands;
 
@@ -56,7 +55,10 @@ public sealed class DownloadSpeedCommand : AsyncCommand<DownloadSpeedCommandSett
             });
 
 
-        console.WriteLine($"{result.bytesProcessed} bytes downloaded in {result.elapsedMilliseconds} ms");
+        var size = ByteSize.FromBytes(result.bytesProcessed);
+        var elapsed = TimeSpan.FromMilliseconds(result.elapsedMilliseconds);
+
+        console.WriteLine($"{size.ToString()} downloaded in {elapsed.Humanize()}");
 
         var speedString = result.GetSpeedString();
 

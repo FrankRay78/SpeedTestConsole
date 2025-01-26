@@ -7,6 +7,6 @@ public static class ResultExtensions
         // Calculate the download speed
         var bytesPerSecond = ByteSize.FromBytes(result.bytesProcessed / ((double)result.elapsedMilliseconds / 1000));
 
-        return $"Speed: {bytesPerSecond.ToString("b")}/s";
+        return $"Speed: {bytesPerSecond.ToString()}/s";
     }
 }
