@@ -29,23 +29,31 @@ internal class CustomHelpProvider : HelpProvider
         public ICommandInfo? DefaultCommand => throw new NotImplementedException();
     }
 
+    private readonly string? ApplicationName;
+
     public CustomHelpProvider(ICommandAppSettings settings)
         : base(settings)
     {
+        ApplicationName = settings.ApplicationName;
     }
 
     public override IEnumerable<IRenderable> GetHeader(ICommandModel model, ICommandInfo? command)
     {
-        var font = FigletFont.Load("slant.flf");
+        if (!string.IsNullOrWhiteSpace(ApplicationName))
+        {
+            var font = FigletFont.Load("slant.flf");
 
-        return
-        [
-            Text.NewLine,
-            new FigletText(font, "SpeedTestConsole")
-                .LeftJustified()
-                .Color(Color.Gold1),
-            Text.NewLine
-        ];
+            return
+            [
+                Text.NewLine,
+                new FigletText(font, ApplicationName)
+                    .LeftJustified()
+                    .Color(Color.Gold1),
+                Text.NewLine
+            ];
+        }
+
+        return base.GetHeader(model, command);
     }
 
     public override IEnumerable<IRenderable> GetDescription(ICommandModel model, ICommandInfo? command)
