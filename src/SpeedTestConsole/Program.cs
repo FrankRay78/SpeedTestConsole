@@ -23,11 +23,11 @@ public static class Program
 
     public static int Main(string[] args)
     {
-        var registrar = new TypeRegistrar();
-        registrar.Register(typeof(ISpeedTestClient), typeof(SpeedTestStub));
-
         //var registrar = new TypeRegistrar();
-        //registrar.Register(typeof(ISpeedTestClient), typeof(SpeedTestClient));
+        //registrar.Register(typeof(ISpeedTestClient), typeof(SpeedTestStub));
+
+        var registrar = new TypeRegistrar();
+        registrar.Register(typeof(ISpeedTestClient), typeof(SpeedTestClient));
 
         var app = new CommandApp(registrar);
 
