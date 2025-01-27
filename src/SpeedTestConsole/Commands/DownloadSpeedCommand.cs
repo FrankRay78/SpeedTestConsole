@@ -62,7 +62,7 @@ public sealed class DownloadSpeedCommand : AsyncCommand<DownloadSpeedCommandSett
 
         var speedString = result.GetSpeedString();
 
-        console.WriteLine(speedString);
+        console.WriteLine($"Speed: {speedString}");
 
         return 0;
     }
