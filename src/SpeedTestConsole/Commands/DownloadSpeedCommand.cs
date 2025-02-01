@@ -7,11 +7,13 @@ public sealed class DownloadSpeedCommand : AsyncCommand<DownloadSpeedCommandSett
 {
     private IAnsiConsole console;
     private ISpeedTestClient speedTestClient;
+    private IClock clock;
 
-    public DownloadSpeedCommand(IAnsiConsole console, ISpeedTestClient speedTestClient)
+    public DownloadSpeedCommand(IAnsiConsole console, ISpeedTestClient speedTestClient, IClock clock)
     {
         this.console = console;
         this.speedTestClient = speedTestClient;
+        this.clock = clock;
     }
 
     public override async Task<int> ExecuteAsync(CommandContext context, DownloadSpeedCommandSettings settings)
@@ -62,7 +64,11 @@ public sealed class DownloadSpeedCommand : AsyncCommand<DownloadSpeedCommandSett
 
         var speedString = result.GetSpeedString();
 
-        console.WriteLine($"Speed: {speedString}");
+        if (settings.IncludeTimestamp)
+        {
+            console.Write($"{clock.Now.ToString(settings.DateTimeFormat)} ");
+        }
+        console.WriteLine($"Speed: {speedString} download");
 
         return 0;
     }
