@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using SpeedTestConsole;
 using SpeedTestConsole.DependencyInjection;
 
 public static class Program
@@ -13,6 +13,7 @@ public static class Program
     {
         config.SetApplicationName("SpeedTestConsole");
         config.ValidateExamples();
+        config.Settings.ShowOptionDefaultValues = true;
 
         // Register the custom help provider
         config.SetHelpProvider(new CustomHelpProvider(config.Settings));
@@ -25,9 +26,11 @@ public static class Program
     {
         //var registrar = new TypeRegistrar();
         //registrar.Register(typeof(ISpeedTestClient), typeof(SpeedTestStub));
+        //registrar.Register(typeof(IClock), typeof(ClockStub));
 
         var registrar = new TypeRegistrar();
         registrar.Register(typeof(ISpeedTestClient), typeof(SpeedTestClient));
+        registrar.Register(typeof(IClock), typeof(Clock));
 
         var app = new CommandApp(registrar);
 

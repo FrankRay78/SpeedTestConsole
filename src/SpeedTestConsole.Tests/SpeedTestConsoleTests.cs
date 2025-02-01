@@ -67,6 +67,7 @@ public class SpeedTestConsoleTests
 
         var registrar = new TypeRegistrar();
         registrar.RegisterInstance(typeof(ISpeedTestClient), mock);
+        registrar.Register(typeof(IClock), typeof(ClockStub));
 
         var app = new CommandAppTester(registrar, new CommandAppTesterSettings { TrimConsoleOutput = false });
         app.Configure(Program.ConfigureAction);
@@ -85,6 +86,7 @@ public class SpeedTestConsoleTests
         // Given
         var registrar = new TypeRegistrar();
         registrar.Register(typeof(ISpeedTestClient), typeof(SpeedTestStub));
+        registrar.Register(typeof(IClock), typeof(ClockStub));
 
         var app = new CommandAppTester(registrar, new CommandAppTesterSettings { TrimConsoleOutput = false });
         app.Configure(Program.ConfigureAction);
@@ -95,6 +97,27 @@ public class SpeedTestConsoleTests
         // Then
         Assert.Equal(0, result.ExitCode);
         await Verify(result.Output);
+    }
+
+    [InlineData("-t")]
+    [InlineData("--timestamp")]
+    [Theory]
+    public async Task Should_Perform_Download_Speed_Test_With_Timestamp(string timestamp)
+    {
+        // Given
+        var registrar = new TypeRegistrar();
+        registrar.Register(typeof(ISpeedTestClient), typeof(SpeedTestStub));
+        registrar.Register(typeof(IClock), typeof(ClockStub));
+
+        var app = new CommandAppTester(registrar, new CommandAppTesterSettings { TrimConsoleOutput = false });
+        app.Configure(Program.ConfigureAction);
+
+        // When
+        var result = await app.RunAsync("download", timestamp);
+
+        // Then
+        Assert.Equal(0, result.ExitCode);
+        await Verify(result.Output).DisableRequireUniquePrefix();
     }
 
     [Fact]
@@ -108,6 +131,7 @@ public class SpeedTestConsoleTests
 
         var registrar = new TypeRegistrar();
         registrar.RegisterInstance(typeof(ISpeedTestClient), mock);
+        registrar.Register(typeof(IClock), typeof(ClockStub));
 
         var app = new CommandAppTester(registrar, new CommandAppTesterSettings { TrimConsoleOutput = false });
         app.Configure(Program.ConfigureAction);
