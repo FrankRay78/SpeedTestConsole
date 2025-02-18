@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SpeedTestConsole.Lib.DataTypes;
+﻿namespace SpeedTestConsole.Lib.DataTypes;
 
 /// <summary>
 /// Represents a server used for network speed testing.
@@ -14,7 +8,7 @@ namespace SpeedTestConsole.Lib.DataTypes;
 /// </remarks>
 public interface IServer
 {
-    public string? Name { get; set; }
-    public string? Sponsor { get; set; }
-    public string? Url { get; set; }
+    string? Name { get; set; }
+    string? Sponsor { get; set; }
+    string? Url { get; set; }
 }

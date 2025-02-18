@@ -117,12 +117,12 @@ public sealed class SpeedTestClient : ISpeedTestClient
         return (fastestServer == null ? null : (fastestServer, fastestLatency));
     }
 
-    public async Task<(long bytesProcessed, long elapsedMilliseconds)> GetDownloadSpeedAsync(IServer server)
+    public async Task<SpeedTestResult> GetDownloadSpeedAsync(IServer server)
     {
         return await GetDownloadSpeedAsync(server, (int _) => { });
     }
 
-    public async Task<(long bytesProcessed, long elapsedMilliseconds)> GetDownloadSpeedAsync(IServer server, Action<int> UpdateProgress)
+    public async Task<SpeedTestResult> GetDownloadSpeedAsync(IServer server, Action<int> UpdateProgress)
     {
         if (string.IsNullOrWhiteSpace(server.Url))
         {
@@ -143,7 +143,7 @@ public sealed class SpeedTestClient : ISpeedTestClient
         return downloadResult;
     }
 
-    private async Task<(long bytesProcessed, long elapsedMilliseconds)> GenericTestSpeedAsync<T>(IEnumerable<T> testData,
+    private async Task<SpeedTestResult> GenericTestSpeedAsync<T>(IEnumerable<T> testData,
         Func<HttpClient, T, Task<int>> doWork,
         Action<int> UpdateProgress,
         int parallelTasks)
@@ -190,7 +190,7 @@ public sealed class SpeedTestClient : ISpeedTestClient
         timer.Stop();
 
         long totalBytesProcessed = downloadTasks.Sum(task => task.Result);
-        return (totalBytesProcessed, timer.ElapsedMilliseconds);
+        return new SpeedTestResult() { BytesProcessed = totalBytesProcessed, ElapsedMilliseconds = timer.ElapsedMilliseconds };
     }
 
     #region Helper Functions

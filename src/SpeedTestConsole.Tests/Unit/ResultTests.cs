@@ -2,7 +2,7 @@
 
 namespace SpeedTestConsole.Tests.Unit;
 
-public class ResultTests
+public class SpeedTestResultTests
 {
     [InlineData(1, 1000, "1 B/s")]
     [InlineData(999, 1000, "999 B/s")]
@@ -27,7 +27,7 @@ public class ResultTests
     public void Should_Calculate_Bytes_Per_Second_Correctly(long bytesProcessed, long elapsedMilliseconds, string expected)
     {
         // Given
-        var result = (bytesProcessed, elapsedMilliseconds);
+        var result = new SpeedTestResult { BytesProcessed = bytesProcessed, ElapsedMilliseconds = elapsedMilliseconds };
 
         // When
         var speedString = result.GetSpeedString();

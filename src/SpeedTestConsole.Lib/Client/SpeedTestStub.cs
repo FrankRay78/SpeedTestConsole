@@ -30,12 +30,12 @@ public class SpeedTestStub : ISpeedTestClient
         return Task.FromResult<(IServer server, int latency)?>((fastestServer, fastestLatency));
     }
 
-    public Task<(long bytesProcessed, long elapsedMilliseconds)> GetDownloadSpeedAsync(IServer server)
+    public Task<SpeedTestResult> GetDownloadSpeedAsync(IServer server)
     {
         return GetDownloadSpeedAsync(server, _ => { });
     }
 
-    public Task<(long bytesProcessed, long elapsedMilliseconds)> GetDownloadSpeedAsync(IServer server, Action<int> updateProgress)
+    public Task<SpeedTestResult> GetDownloadSpeedAsync(IServer server, Action<int> updateProgress)
     {
         if (updateProgress is not null)
         {
@@ -45,6 +45,6 @@ public class SpeedTestStub : ISpeedTestClient
             updateProgress(100);
         }
 
-        return Task.FromResult<(long bytesProcessed, long elapsedMilliseconds)>((1000, 1000));
+        return Task.FromResult<SpeedTestResult>(new SpeedTestResult() { BytesProcessed = 1000, ElapsedMilliseconds = 1000 });
     }
 }
