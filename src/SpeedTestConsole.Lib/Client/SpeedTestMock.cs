@@ -9,8 +9,8 @@ public class SpeedTestMock : ISpeedTestClient
     public Func<Task<IServer[]>>? GetServersAsyncFunc { get; set; }
     public Func<IServer, Task<int?>>? GetServerLatencyAsyncFunc { get; set; }
     public Func<IServer[], Task<(IServer server, int latency)?>>? GetFastestServerByLatencyAsyncFunc { get; set; }
-    public Func<IServer, Task<(long bytesProcessed, long elapsedMilliseconds)>>? GetDownloadSpeedAsyncFunc { get; set; }
-    public Func<IServer, Action<int>, Task<(long bytesProcessed, long elapsedMilliseconds)>>? GetDownloadSpeedWithProgressAsyncFunc { get; set; }
+    public Func<IServer, Task<SpeedTestResult>>? GetDownloadSpeedAsyncFunc { get; set; }
+    public Func<IServer, Action<int>, Task<SpeedTestResult>>? GetDownloadSpeedWithProgressAsyncFunc { get; set; }
 
     public Task<IServer[]> GetServersAsync()
     {
@@ -33,14 +33,14 @@ public class SpeedTestMock : ISpeedTestClient
         throw new NotImplementedException();
     }
 
-    public Task<(long bytesProcessed, long elapsedMilliseconds)> GetDownloadSpeedAsync(IServer server)
+    public Task<SpeedTestResult> GetDownloadSpeedAsync(IServer server)
     {
         if (GetDownloadSpeedAsyncFunc != null)
             return GetDownloadSpeedAsyncFunc(server);
         throw new NotImplementedException();
     }
 
-    public Task<(long bytesProcessed, long elapsedMilliseconds)> GetDownloadSpeedAsync(IServer server, Action<int> updateProgress)
+    public Task<SpeedTestResult> GetDownloadSpeedAsync(IServer server, Action<int> updateProgress)
     {
         if (GetDownloadSpeedWithProgressAsyncFunc != null)
             return GetDownloadSpeedWithProgressAsyncFunc(server, updateProgress);

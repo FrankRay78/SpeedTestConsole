@@ -14,12 +14,13 @@ public static class Program
         config.SetApplicationName("SpeedTestConsole");
         config.ValidateExamples();
         config.Settings.ShowOptionDefaultValues = true;
+        config.Settings.TrimTrailingPeriod = false;
 
         // Register the custom help provider
         config.SetHelpProvider(new CustomHelpProvider(config.Settings));
 
-        config.AddCommand<ListServersCommand>("servers").WithDescription("Show the nearest speed test servers");
-        config.AddCommand<DownloadSpeedCommand>("download").WithDescription("Perform an internet download speed test");
+        config.AddCommand<ListServersCommand>("servers").WithDescription("Show the nearest speed test servers.");
+        config.AddCommand<DownloadSpeedCommand>("download").WithDescription("Perform an internet download speed test.");
     });
 
     public static int Main(string[] args)

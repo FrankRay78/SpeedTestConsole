@@ -31,7 +31,7 @@ public sealed class DownloadSpeedCommand : AsyncCommand<DownloadSpeedCommandSett
         console.WriteLine($"Fastest server: {fastest.Value.server.Sponsor} ({fastest.Value.latency}ms)");
 
 
-        (long bytesProcessed, long elapsedMilliseconds) result = (0, 0);
+        SpeedTestResult result = new SpeedTestResult();
 
         // Show download progress
         await console.Progress()
@@ -57,18 +57,19 @@ public sealed class DownloadSpeedCommand : AsyncCommand<DownloadSpeedCommandSett
             });
 
 
-        var size = ByteSize.FromBytes(result.bytesProcessed);
-        var elapsed = TimeSpan.FromMilliseconds(result.elapsedMilliseconds);
+        var size = ByteSize.FromBytes(result.BytesProcessed);
+        var elapsed = TimeSpan.FromMilliseconds(result.ElapsedMilliseconds);
 
         console.WriteLine($"{size.ToString()} downloaded in {elapsed.Humanize()}");
 
-        var speedString = result.GetSpeedString();
+        var speedString = result.GetSpeedString(settings.SpeedUnit);
 
         if (settings.IncludeTimestamp)
         {
             console.Write($"{clock.Now.ToString(settings.DateTimeFormat)} ");
         }
         console.WriteLine($"Speed: {speedString} download");
+
 
         return 0;
     }
