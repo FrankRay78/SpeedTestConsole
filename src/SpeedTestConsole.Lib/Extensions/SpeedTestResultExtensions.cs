@@ -2,60 +2,6 @@
 
 public static class SpeedTestResultExtensions
 {
-    ///// <summary>
-    ///// Calculate the speed
-    ///// </summary>
-    //public static string GetSpeedString(this SpeedTestResult result, SpeedUnit unit)
-    //{
-    //    string speedString = string.Empty;
-
-    //    if (unit == SpeedUnit.BitsPerSecond)
-    //    {
-    //        var bitsPerSecond = (result.BytesProcessed * 8) / ((double)result.ElapsedMilliseconds / 1000);
-
-    //        if (bitsPerSecond < 1000)
-    //        {
-    //            speedString = $"{bitsPerSecond.ToString()} b/s";
-    //        }
-    //        else if (bitsPerSecond < 1000000)
-    //        {
-    //            speedString = $"{(bitsPerSecond / 1000).ToString()} Kb/s";
-    //        }
-    //        else if (bitsPerSecond < 1000000000)
-    //        {
-    //            speedString = $"{(bitsPerSecond / 1000000).ToString()} Mb/s";
-    //        }
-    //        else if (bitsPerSecond < 1000000000000)
-    //        {
-    //            speedString = $"{(bitsPerSecond / 1000000000).ToString()} Gb/s";
-    //        }
-    //        else
-    //        {
-    //            speedString = $"{(bitsPerSecond / 1000000000000).ToString()} Tb/s";
-    //        }
-    //    }
-    //    else if (unit == SpeedUnit.BytesPerSecond)
-    //    {
-    //        var bytesPerSecond = ByteSize.FromBytes(result.BytesProcessed / ((double)result.ElapsedMilliseconds / 1000));
-
-    //        // Avoid ByteSize reverting to bits
-    //        if (bytesPerSecond.Bytes < 1)
-    //        {
-    //            speedString = $"{bytesPerSecond.ToString("0.## B")}/s";
-    //        }
-    //        else
-    //        {
-    //            speedString = $"{bytesPerSecond.ToString()}/s";
-    //        }
-    //    }
-    //    else
-    //    {
-    //        throw new Exception($"Unknown speed unit: {nameof(unit)}");
-    //    }
-
-    //    return speedString;
-    //}
-
     /// <summary>
     /// Calculate the speed
     /// </summary>
@@ -81,23 +27,23 @@ public static class SpeedTestResultExtensions
 
         if (bitsPerSecond < 1000)
         {
-            return $"{bitsPerSecond.ToString("0.##")} b/s";
+            return $"{bitsPerSecond.ToString("0.##")} bps";
         }
         else if (bitsPerSecond < 1000000)
         {
-            return $"{(bitsPerSecond / 1000).ToString("0.##")} Kb/s";
+            return $"{(bitsPerSecond / 1000).ToString("0.##")} Kbps";
         }
         else if (bitsPerSecond < 1000000000)
         {
-            return $"{(bitsPerSecond / 1000000).ToString("0.##")} Mb/s";
+            return $"{(bitsPerSecond / 1000000).ToString("0.##")} Mbps";
         }
         else if (bitsPerSecond < 1000000000000)
         {
-            return $"{(bitsPerSecond / 1000000000).ToString("0.##")} Gb/s";
+            return $"{(bitsPerSecond / 1000000000).ToString("0.##")} Gbps";
         }
         else
         {
-            return $"{(bitsPerSecond / 1000000000000).ToString("0.##")} Tb/s";
+            return $"{(bitsPerSecond / 1000000000000).ToString("0.##")} Tbps";
         }
     }
 
@@ -108,11 +54,11 @@ public static class SpeedTestResultExtensions
         // Avoid ByteSize reverting to bits
         if (bytesPerSecond.Bytes < 1)
         {
-            return $"{bytesPerSecond.ToString("0.## B")}/s";
+            return $"{bytesPerSecond.ToString("0.## B")}ps";
         }
         else
         {
-            return $"{bytesPerSecond.ToString("0.##")}/s";
+            return $"{bytesPerSecond.ToString("0.##")}ps";
         }
     }
 }

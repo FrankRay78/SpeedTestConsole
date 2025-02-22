@@ -13,8 +13,8 @@ USAGE:
     SpeedTestConsole [OPTIONS] <COMMAND>
 
 OPTIONS:
-    -h, --help    Prints help information
+    -h, --help    Prints help information.
 
 COMMANDS:
-    servers     Show the nearest speed test servers    
-    download    Perform an internet download speed test
+    servers     Show the nearest speed test servers.    
+    download    Perform an internet download speed test.
