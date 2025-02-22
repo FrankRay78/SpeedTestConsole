@@ -14,6 +14,7 @@ public static class Program
         config.SetApplicationName("SpeedTestConsole");
         config.ValidateExamples();
         config.Settings.ShowOptionDefaultValues = true;
+        config.Settings.TrimTrailingPeriod = false;
 
         // Register the custom help provider
         config.SetHelpProvider(new CustomHelpProvider(config.Settings));

@@ -14,4 +14,9 @@ public sealed class DownloadSpeedCommandSettings : CommandSettings
     [DefaultValue("yyyy'-'MM'-'dd' 'HH':'mm':'ss")]
     //ref: https://learn.microsoft.com/en-us/dotnet/standard/base-types/standard-date-and-time-format-strings
     public string? DateTimeFormat { get; set; }
+
+    [CommandOption("-u | --unit")]
+    [Description("The speed unit to display the test result in.")]
+    [DefaultValue(SpeedUnit.BytesPerSecond)]
+    public SpeedUnit SpeedUnit { get; set; }
 }

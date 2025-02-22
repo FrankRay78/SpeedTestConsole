@@ -62,7 +62,7 @@ public sealed class DownloadSpeedCommand : AsyncCommand<DownloadSpeedCommandSett
 
         console.WriteLine($"{size.ToString()} downloaded in {elapsed.Humanize()}");
 
-        var speedString = result.GetSpeedString();
+        var speedString = result.GetSpeedString(settings.SpeedUnit);
 
         if (settings.IncludeTimestamp)
         {
