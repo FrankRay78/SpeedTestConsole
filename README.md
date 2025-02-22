@@ -48,10 +48,12 @@ Then clone this repository locally and build.
 - [X] Download speed test
 - [ ] Upload speed test
 - [ ] User-configurable switches
-   - [ ] Speed units (eg. GB/s, Mib/s)
+   - [X] BitsPerSecond or BytesPerSecond
+   - [ ] Fixed speed unit (eg. Mbps, Gbps)
    - [ ] Verbosity of output
    - [ ] `--plain` switch for minimal output
-   - [ ] Maximum test length / size
+   - [ ] Maximum speed test (time)
+   - [ ] Maximum speed test (size transferred)
 - [ ] Periodically repeat tests
 
 See the [open issues](https://github.com/FrankRay78/SpeedTestConsole/issues) for a full list of proposed features (and known issues).
