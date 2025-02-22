@@ -17,6 +17,6 @@ public sealed class DownloadSpeedCommandSettings : CommandSettings
 
     [CommandOption("-u | --unit")]
     [Description("The speed unit.\nBitsPerSecond, BytesPerSecond")]
-    [DefaultValue(SpeedUnit.BytesPerSecond)]
+    [DefaultValue(SpeedUnit.BitsPerSecond)]
     public SpeedUnit SpeedUnit { get; set; }
 }
