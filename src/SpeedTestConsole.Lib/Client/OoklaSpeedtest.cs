@@ -4,9 +4,9 @@ using System.Net.Http.Headers;
 namespace SpeedTestConsole.Lib.Client;
 
 /// <summary>
-/// An Ookla Speedtest implementation of the <see cref="ISpeedTestClient"/> interface.
+/// An Ookla Speedtest implementation of the <see cref="ISpeedTestService"/> interface.
 /// </summary>
-public sealed class OoklaSpeedtest : ISpeedTestClient
+public sealed class OoklaSpeedtest : ISpeedTestService
 {
     private OoklaSpeedtestSettings settings { get; set; }
 

@@ -1,9 +1,9 @@
 ﻿namespace SpeedTestConsole.Lib.Client;
 
 /// <summary>
-/// A stub implementation of <see cref="ISpeedTestClient"/> for testing purposes.
+/// A stub implementation of <see cref="ISpeedTestService"/> for testing purposes.
 /// </summary>
-public class SpeedTestStub : ISpeedTestClient
+public class SpeedTestStub : ISpeedTestService
 {
     public Task<IServer[]> GetServersAsync()
     {

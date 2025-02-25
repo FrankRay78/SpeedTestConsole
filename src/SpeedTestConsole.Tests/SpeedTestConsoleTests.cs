@@ -24,7 +24,7 @@ public class SpeedTestConsoleTests
     {
         // Given
         var registrar = new TypeRegistrar();
-        registrar.Register(typeof(ISpeedTestClient), typeof(SpeedTestStub));
+        registrar.Register(typeof(ISpeedTestService), typeof(SpeedTestStub));
 
         var app = new CommandAppTester(registrar, new CommandAppTesterSettings { TrimConsoleOutput = false });
         app.Configure(Program.ConfigureAction);
@@ -42,7 +42,7 @@ public class SpeedTestConsoleTests
     {
         // Given
         var registrar = new TypeRegistrar();
-        registrar.Register(typeof(ISpeedTestClient), typeof(SpeedTestStub));
+        registrar.Register(typeof(ISpeedTestService), typeof(SpeedTestStub));
 
         var app = new CommandAppTester(registrar, new CommandAppTesterSettings { TrimConsoleOutput = false });
         app.Configure(Program.ConfigureAction);
@@ -66,7 +66,7 @@ public class SpeedTestConsoleTests
         };
 
         var registrar = new TypeRegistrar();
-        registrar.RegisterInstance(typeof(ISpeedTestClient), mock);
+        registrar.RegisterInstance(typeof(ISpeedTestService), mock);
         registrar.Register(typeof(IClock), typeof(ClockStub));
 
         var app = new CommandAppTester(registrar, new CommandAppTesterSettings { TrimConsoleOutput = false });
@@ -85,7 +85,7 @@ public class SpeedTestConsoleTests
     {
         // Given
         var registrar = new TypeRegistrar();
-        registrar.Register(typeof(ISpeedTestClient), typeof(SpeedTestStub));
+        registrar.Register(typeof(ISpeedTestService), typeof(SpeedTestStub));
         registrar.Register(typeof(IClock), typeof(ClockStub));
 
         var app = new CommandAppTester(registrar, new CommandAppTesterSettings { TrimConsoleOutput = false });
@@ -106,7 +106,7 @@ public class SpeedTestConsoleTests
     {
         // Given
         var registrar = new TypeRegistrar();
-        registrar.Register(typeof(ISpeedTestClient), typeof(SpeedTestStub));
+        registrar.Register(typeof(ISpeedTestService), typeof(SpeedTestStub));
         registrar.Register(typeof(IClock), typeof(ClockStub));
 
         var app = new CommandAppTester(registrar, new CommandAppTesterSettings { TrimConsoleOutput = false });
@@ -130,7 +130,7 @@ public class SpeedTestConsoleTests
         };
 
         var registrar = new TypeRegistrar();
-        registrar.RegisterInstance(typeof(ISpeedTestClient), mock);
+        registrar.RegisterInstance(typeof(ISpeedTestService), mock);
         registrar.Register(typeof(IClock), typeof(ClockStub));
 
         var app = new CommandAppTester(registrar, new CommandAppTesterSettings { TrimConsoleOutput = false });

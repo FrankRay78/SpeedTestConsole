@@ -6,10 +6,10 @@ namespace SpeedTestConsole.Commands;
 public sealed class DownloadSpeedCommand : AsyncCommand<DownloadSpeedCommandSettings>
 {
     private IAnsiConsole console;
-    private ISpeedTestClient speedTestClient;
+    private ISpeedTestService speedTestClient;
     private IClock clock;
 
-    public DownloadSpeedCommand(IAnsiConsole console, ISpeedTestClient speedTestClient, IClock clock)
+    public DownloadSpeedCommand(IAnsiConsole console, ISpeedTestService speedTestClient, IClock clock)
     {
         this.console = console;
         this.speedTestClient = speedTestClient;

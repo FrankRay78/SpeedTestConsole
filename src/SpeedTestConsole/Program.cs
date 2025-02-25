@@ -26,12 +26,12 @@ public static class Program
     public static int Main(string[] args)
     {
         //var registrar = new TypeRegistrar();
-        //registrar.Register(typeof(ISpeedTestClient), typeof(SpeedTestStub));
+        //registrar.Register(typeof(ISpeedTestService), typeof(SpeedTestStub));
         //registrar.Register(typeof(IClock), typeof(ClockStub));
 
         var registrar = new TypeRegistrar();
         registrar.Register(typeof(OoklaSpeedtestSettings), typeof(OoklaSpeedtestSettings));
-        registrar.Register(typeof(ISpeedTestClient), typeof(OoklaSpeedtest));
+        registrar.Register(typeof(ISpeedTestService), typeof(OoklaSpeedtest));
         registrar.Register(typeof(IClock), typeof(Clock));
 
         var app = new CommandApp(registrar);
