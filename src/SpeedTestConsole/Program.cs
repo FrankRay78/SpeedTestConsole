@@ -30,6 +30,7 @@ public static class Program
         //registrar.Register(typeof(IClock), typeof(ClockStub));
 
         var registrar = new TypeRegistrar();
+        registrar.Register(typeof(SpeedTestClientSettings), typeof(SpeedTestClientSettings));
         registrar.Register(typeof(ISpeedTestClient), typeof(SpeedTestClient));
         registrar.Register(typeof(IClock), typeof(Clock));
 
