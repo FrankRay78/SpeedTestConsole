@@ -4,7 +4,7 @@
 /// Configuration unique to Ookla Speedtest.
 /// </summary>
 /// <see cref="https://www.speedtest.net/"/>
-public sealed class SpeedTestClientSettings
+public sealed class OoklaSpeedtestSettings
 {
     public string ServersUrl = "http://www.speedtest.net/speedtest-servers.php";
 

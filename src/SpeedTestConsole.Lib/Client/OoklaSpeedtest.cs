@@ -6,11 +6,11 @@ namespace SpeedTestConsole.Lib.Client;
 /// <summary>
 /// An Ookla Speedtest implementation of the <see cref="ISpeedTestClient"/> interface.
 /// </summary>
-public sealed class SpeedTestClient : ISpeedTestClient
+public sealed class OoklaSpeedtest : ISpeedTestClient
 {
-    private SpeedTestClientSettings settings { get; set; }
+    private OoklaSpeedtestSettings settings { get; set; }
 
-    public SpeedTestClient(SpeedTestClientSettings settings)
+    public OoklaSpeedtest(OoklaSpeedtestSettings settings)
     {
         this.settings = settings;
     }
