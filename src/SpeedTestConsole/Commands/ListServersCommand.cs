@@ -6,9 +6,9 @@ namespace SpeedTestConsole.Commands;
 public sealed class ListServersCommand : AsyncCommand<ListServersCommandSettings>
 {
     private IAnsiConsole console;
-    private ISpeedTestClient speedTestClient;
+    private ISpeedTestService speedTestClient;
 
-    public ListServersCommand(IAnsiConsole console, ISpeedTestClient speedTestClient)
+    public ListServersCommand(IAnsiConsole console, ISpeedTestService speedTestClient)
     {
         this.console = console;
         this.speedTestClient = speedTestClient;
@@ -50,7 +50,7 @@ public sealed class ListServersCommand : AsyncCommand<ListServersCommandSettings
         console.Write(table);
     }
 
-    private async Task DisplayServersWithLatency(List<IServer> servers, ISpeedTestClient speedTestClient)
+    private async Task DisplayServersWithLatency(List<IServer> servers, ISpeedTestService speedTestClient)
     {
         var table = new Table()
             .Border(TableBorder.Square)

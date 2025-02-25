@@ -3,7 +3,7 @@ namespace SpeedTestConsole.Lib.Client;
 /// <summary>
 /// Interface for performing internet speed tests.
 /// </summary>
-public interface ISpeedTestClient
+public interface ISpeedTestService
 {
     public Task<IServer[]> GetServersAsync();
     public Task<int?> GetServerLatencyAsync(IServer server);

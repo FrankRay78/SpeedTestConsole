@@ -1,51 +1,30 @@
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SpeedTestConsole.Lib.Client;
 
 /// <summary>
-/// An Ookla Speedtest implementation of the <see cref="ISpeedTestClient"/> interface.
+/// An Ookla Speedtest implementation of the <see cref="ISpeedTestService"/> interface.
 /// </summary>
-public sealed class SpeedTestClient : ISpeedTestClient
+public sealed class OoklaSpeedtest : ISpeedTestService
 {
-    /// <summary>
-    /// Configuration unique to Ookla Speedtest.
-    /// </summary>
-    /// <see cref="https://www.speedtest.net/"/>
-    public sealed class Constants
+    private OoklaSpeedtestSettings settings { get; set; }
+
+    public OoklaSpeedtest(OoklaSpeedtestSettings settings)
     {
-        public const string ServersUrl = "http://www.speedtest.net/speedtest-servers.php";
-
-        // These are used to generate the url for downloading test files.
-        // eg: random1500x1500.jpg
-        public static readonly int[] DownloadSizes = { 1500, 2000, 3000, 3500, 4000 };
-        public const int DownloadSizeIterations = 4;
-
-        // The default timeout for HttpClient is 100 seconds.
-        // ref: https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient.timeout?view=net-9.0
-        public const int DefaultHttpTimeoutMilliseconds = 100000;
-
-        public const int LatencyTestIterations = 4;
-        public const int DownloadParallelTasks = 8;
-    }
-
-    public SpeedTestClient()
-    {
+        this.settings = settings;
     }
 
     public async Task<IServer[]> GetServersAsync()
     {
         using var httpClient = GetHttpClient();
-        var serversXml = await httpClient.GetStringAsync(Constants.ServersUrl);
+        var serversXml = await httpClient.GetStringAsync(settings.ServersUrl);
         return serversXml.DeserializeFromXml<ServersList>()?.Servers ?? Array.Empty<Server>();
     }
 
     public async Task<int?> GetServerLatencyAsync(IServer server)
     {
-        return await GetServerLatencyAsync(server, Constants.DefaultHttpTimeoutMilliseconds, Constants.LatencyTestIterations);
+        return await GetServerLatencyAsync(server, settings.DefaultHttpTimeoutMilliseconds, settings.LatencyTestIterations);
     }
 
     private async Task<int?> GetServerLatencyAsync(IServer server, int httpTimeoutMilliseconds, int testIterations)
@@ -95,15 +74,15 @@ public sealed class SpeedTestClient : ISpeedTestClient
 
     public async Task<(IServer server, int latency)?> GetFastestServerByLatencyAsync(IServer[] servers)
     {
-        int fastestLatency = Constants.DefaultHttpTimeoutMilliseconds;
+        int fastestLatency = settings.DefaultHttpTimeoutMilliseconds;
         IServer? fastestServer = null;
 
         foreach (var server in servers)
         {
             // nb. Bump up the fastest latency/timeout by a slight margin
-            var httpTimeoutMilliseconds = (fastestLatency == Constants.DefaultHttpTimeoutMilliseconds ? fastestLatency : (int)(fastestLatency * 1.5));
+            var httpTimeoutMilliseconds = (fastestLatency == settings.DefaultHttpTimeoutMilliseconds ? fastestLatency : (int)(fastestLatency * 1.5));
 
-            var latency = await GetServerLatencyAsync(server, httpTimeoutMilliseconds, Constants.LatencyTestIterations);
+            var latency = await GetServerLatencyAsync(server, httpTimeoutMilliseconds, settings.LatencyTestIterations);
 
             if (latency != null && latency < fastestLatency)
             {
@@ -138,7 +117,7 @@ public sealed class SpeedTestClient : ISpeedTestClient
             return data.Length;
         };
 
-        var downloadResult = await GenericTestSpeedAsync(downloadUrls, DownloadAndMeasureAsync, UpdateProgress, Constants.DownloadParallelTasks);
+        var downloadResult = await GenericTestSpeedAsync(downloadUrls, DownloadAndMeasureAsync, UpdateProgress, settings.DownloadParallelTasks);
 
         return downloadResult;
     }
@@ -203,13 +182,13 @@ public sealed class SpeedTestClient : ISpeedTestClient
     /// http://manchester.speedtest.boundlessnetworks.uk:8080/speedtest/random1500x1500.jpg?r=1
     /// ...
     /// </example>
-    private static IEnumerable<string> GenerateDownloadUrls(string serverUrl)
+    private IEnumerable<string> GenerateDownloadUrls(string serverUrl)
     {
         var downloadUrl = GetBaseUrl(serverUrl).Append("random{0}x{0}.jpg?r={1}");
 
-        foreach (var downloadSize in Constants.DownloadSizes)
+        foreach (var downloadSize in settings.DownloadSizes)
         {
-            for (var i = 0; i < Constants.DownloadSizeIterations; i++)
+            for (var i = 0; i < settings.DownloadSizeIterations; i++)
             {
                 yield return string.Format(downloadUrl, downloadSize, i);
             }

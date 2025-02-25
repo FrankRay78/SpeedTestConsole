@@ -1,9 +1,9 @@
 ﻿namespace SpeedTestConsole.Lib.Client;
 
 /// <summary>
-/// A mock implementation of <see cref="ISpeedTestClient"/> for testing purposes.
+/// A mock implementation of <see cref="ISpeedTestService"/> for testing purposes.
 /// </summary>
-public class SpeedTestMock : ISpeedTestClient
+public class SpeedTestMock : ISpeedTestService
 {
     // Delegates for method behavior
     public Func<Task<IServer[]>>? GetServersAsyncFunc { get; set; }
