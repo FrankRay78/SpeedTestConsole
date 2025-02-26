@@ -8,12 +8,14 @@ public sealed class DownloadSpeedCommand : AsyncCommand<DownloadSpeedCommandSett
     private IAnsiConsole console;
     private ISpeedTestService speedTestClient;
     private IClock clock;
+    private ILogger<DownloadSpeedCommand> logger;
 
-    public DownloadSpeedCommand(IAnsiConsole console, ISpeedTestService speedTestClient, IClock clock)
+    public DownloadSpeedCommand(IAnsiConsole console, ISpeedTestService speedTestClient, IClock clock, ILogger<DownloadSpeedCommand> logger)
     {
         this.console = console;
         this.speedTestClient = speedTestClient;
         this.clock = clock;
+        this.logger = logger;
     }
 
     public override async Task<int> ExecuteAsync(CommandContext context, DownloadSpeedCommandSettings settings)
@@ -28,7 +30,7 @@ public sealed class DownloadSpeedCommand : AsyncCommand<DownloadSpeedCommandSett
             throw new Exception("No servers available");
         }
 
-        console.WriteLine($"Fastest server: {fastest.Value.server.Sponsor} ({fastest.Value.latency}ms)");
+        logger.LogInformation("Fastest server: {Sponsor} ({Latency} ms)", fastest.Value.server.Sponsor, fastest.Value.latency);
 
 
         SpeedTestResult result = new SpeedTestResult();
@@ -60,7 +62,7 @@ public sealed class DownloadSpeedCommand : AsyncCommand<DownloadSpeedCommandSett
         var size = ByteSize.FromBytes(result.BytesProcessed);
         var elapsed = TimeSpan.FromMilliseconds(result.ElapsedMilliseconds);
 
-        console.WriteLine($"{size.ToString()} downloaded in {elapsed.Humanize()}");
+        logger.LogInformation("{Size} downloaded in {Elapsed}", size.ToString(), elapsed.Humanize());
 
         var speedString = result.GetSpeedString(settings.SpeedUnit);
 
@@ -68,7 +70,7 @@ public sealed class DownloadSpeedCommand : AsyncCommand<DownloadSpeedCommandSett
         {
             console.Write($"{clock.Now.ToString(settings.DateTimeFormat)} ");
         }
-        console.WriteLine($"Speed: {speedString} download");
+        console.WriteLine($"Download: {speedString}");
 
 
         return 0;

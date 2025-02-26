@@ -1,4 +1,7 @@
-﻿using SpeedTestConsole;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Serilog;
+using Serilog.Sinks.SystemConsole.Themes;
+using SpeedTestConsole;
 using SpeedTestConsole.DependencyInjection;
 
 public static class Program
@@ -25,11 +28,21 @@ public static class Program
 
     public static int Main(string[] args)
     {
-        //var registrar = new TypeRegistrar();
+        // Add the Serilog logger to the service collection
+        var serviceCollection = new ServiceCollection()
+            .AddLogging(configure =>
+                configure.AddSerilog(new LoggerConfiguration()
+                    .MinimumLevel.Information()
+                    .WriteTo.Console(outputTemplate: "{Message:lj}{NewLine}", theme: AnsiConsoleTheme.Code, applyThemeToRedirectedOutput: false)
+                    .CreateLogger()
+                )
+            );
+
+        //var registrar = new TypeRegistrar(serviceCollection);
         //registrar.Register(typeof(ISpeedTestService), typeof(SpeedTestStub));
         //registrar.Register(typeof(IClock), typeof(ClockStub));
 
-        var registrar = new TypeRegistrar();
+        var registrar = new TypeRegistrar(serviceCollection);
         registrar.Register(typeof(OoklaSpeedtestSettings), typeof(OoklaSpeedtestSettings));
         registrar.Register(typeof(ISpeedTestService), typeof(OoklaSpeedtest));
         registrar.Register(typeof(IClock), typeof(Clock));
