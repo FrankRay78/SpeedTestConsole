@@ -16,7 +16,12 @@ public sealed class DownloadSpeedCommandSettings : CommandSettings
     public string? DateTimeFormat { get; set; }
 
     [CommandOption("-u | --unit")]
-    [Description("The speed unit.\nBitsPerSecond, BytesPerSecond")]
+    [Description("The speed unit.\n   BitsPerSecond, BytesPerSecond")]
     [DefaultValue(SpeedUnit.BitsPerSecond)]
     public SpeedUnit SpeedUnit { get; set; }
+
+    [CommandOption("--verbosity")]
+    [Description("The verbosity level.\n   Minimal, Normal, Debug\nMinimal is ideal for use in batch scripts.")]
+    [DefaultValue(Verbosity.Normal)]
+    public Verbosity Verbosity { get; set; }
 }

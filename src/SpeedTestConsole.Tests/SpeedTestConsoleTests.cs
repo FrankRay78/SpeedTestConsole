@@ -99,6 +99,28 @@ public class SpeedTestConsoleTests
         await Verify(result.Output);
     }
 
+    [InlineData("Minimal")]
+    [InlineData("Normal")]
+    [InlineData("Debug")]
+    [Theory]
+    public async Task Should_Perform_Download_Speed_Test_With_Verbosity(string verbosity)
+    {
+        // Given
+        var registrar = new TypeRegistrar();
+        registrar.Register(typeof(ISpeedTestService), typeof(SpeedTestStub));
+        registrar.Register(typeof(IClock), typeof(ClockStub));
+
+        var app = new CommandAppTester(registrar, new CommandAppTesterSettings { TrimConsoleOutput = false });
+        app.Configure(Program.ConfigureAction);
+
+        // When
+        var result = await app.RunAsync("download", "--verbosity", verbosity);
+
+        // Then
+        Assert.Equal(0, result.ExitCode);
+        await Verify(result.Output).UseParameters(verbosity);
+    }
+
     [InlineData("-t")]
     [InlineData("--timestamp")]
     [Theory]

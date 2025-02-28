@@ -1,2 +1,3 @@
 ﻿Test Sponsor 1 (100 ms)
+1 KB downloaded in 1 second
 Download: 8 Kbps

@@ -1,3 +1,2 @@
-﻿Fastest server: Test Sponsor 1 (100ms)
-1 KB downloaded in 1 second
-1980-01-01 10:05:00 Speed: 8 Kbps download
+﻿Test Sponsor 1 (100 ms)
+1980-01-01 10:05:00 Download: 8 Kbps
