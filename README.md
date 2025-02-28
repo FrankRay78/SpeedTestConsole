@@ -50,8 +50,8 @@ Then clone this repository locally and build.
 - [ ] User-configurable switches
    - [X] BitsPerSecond or BytesPerSecond
    - [ ] Fixed speed unit (eg. Mbps, Gbps)
-   - [ ] Verbosity of output
-   - [ ] `--plain` switch for minimal output
+   - [X] Verbosity of output
+   - [X] ~~`--plain` switch for minimal output~~ (nb. implemented by verbosity switch)
    - [ ] Maximum speed test (time)
    - [ ] Maximum speed test (size transferred)
 - [ ] Periodically repeat tests
