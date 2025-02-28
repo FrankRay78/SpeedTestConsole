@@ -28,39 +28,51 @@ public sealed class DownloadSpeedCommand : AsyncCommand<DownloadSpeedCommandSett
             throw new Exception("No servers available");
         }
 
-        console.WriteLine($"Fastest server: {fastest.Value.server.Sponsor} ({fastest.Value.latency}ms)");
+        if ((settings.Verbosity & (Verbosity.Normal | Verbosity.Debug)) != 0)
+        {
+            console.WriteLine($"{fastest.Value.server.Sponsor} ({fastest.Value.latency} ms)");
+        }
 
 
         SpeedTestResult result = new SpeedTestResult();
 
-        // Show download progress
-        await console.Progress()
-            .AutoClear(false)
-            .Columns(
-            [
+        if ((settings.Verbosity & Verbosity.Minimal) != 0)
+        {
+            result = await speedTestClient.GetDownloadSpeedAsync(fastest.Value.server);
+        }
+        else
+        {
+            // Graphical progress bar
+            await console.Progress()
+                .AutoClear(false)
+                .Columns(
+                [
                     new TaskDescriptionColumn(),
                     new ProgressBarColumn(),
                     new PercentageColumn(),
-            ])
-            .StartAsync(async progress =>
-            {
-                var downloadProgressTask = progress.AddTask("Downloading", autoStart: true, maxValue: 100);
-
-                Action<int> UpdateProgress = (int percentageComplete) =>
+                ])
+                .StartAsync(async progress =>
                 {
-                    // Update the progress bar
-                    downloadProgressTask.Value = percentageComplete;
-                };
+                    var downloadProgressTask = progress.AddTask("Downloading", autoStart: true, maxValue: 100);
 
-                result = await speedTestClient.GetDownloadSpeedAsync(fastest.Value.server, UpdateProgress);
+                    Action<int> UpdateProgress = (int percentageComplete) =>
+                    {
+                        // Update the progress bar
+                        downloadProgressTask.Value = percentageComplete;
+                    };
 
-            });
+                    result = await speedTestClient.GetDownloadSpeedAsync(fastest.Value.server, UpdateProgress);
+                });
+        }
 
 
         var size = ByteSize.FromBytes(result.BytesProcessed);
         var elapsed = TimeSpan.FromMilliseconds(result.ElapsedMilliseconds);
 
-        console.WriteLine($"{size.ToString()} downloaded in {elapsed.Humanize()}");
+        if ((settings.Verbosity & Verbosity.Debug) != 0)
+        {
+            console.WriteLine($"{size.ToString()} downloaded in {elapsed.Humanize()}");
+        }
 
         var speedString = result.GetSpeedString(settings.SpeedUnit);
 
@@ -68,7 +80,7 @@ public sealed class DownloadSpeedCommand : AsyncCommand<DownloadSpeedCommandSett
         {
             console.Write($"{clock.Now.ToString(settings.DateTimeFormat)} ");
         }
-        console.WriteLine($"Speed: {speedString} download");
+        console.WriteLine($"Download: {speedString}");
 
 
         return 0;
