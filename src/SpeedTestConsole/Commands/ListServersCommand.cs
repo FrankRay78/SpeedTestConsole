@@ -1,7 +1,4 @@
-﻿using SpeedTestConsole.Lib;
-using SpeedTestConsole.Lib.DataTypes;
-
-namespace SpeedTestConsole.Commands;
+﻿namespace SpeedTestConsole.Commands;
 
 public sealed class ListServersCommand : AsyncCommand<ListServersCommandSettings>
 {

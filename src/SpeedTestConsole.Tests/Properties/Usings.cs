@@ -1,4 +1,5 @@
 ﻿global using Spectre.Console.Testing;
-global using SpeedTestConsole.Lib.Client;
-global using SpeedTestConsole.Lib.DataTypes;
+global using SpeedTestConsole.Library.Client;
+global using SpeedTestConsole.Library.DataTypes;
+global using SpeedTestConsole.Library.Extensions;
 global using Xunit;

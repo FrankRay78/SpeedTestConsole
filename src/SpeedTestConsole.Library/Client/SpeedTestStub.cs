@@ -1,4 +1,4 @@
-﻿namespace SpeedTestConsole.Lib.Client;
+﻿namespace SpeedTestConsole.Library.Client;
 
 /// <summary>
 /// A stub implementation of <see cref="ISpeedTestService"/> for testing purposes.

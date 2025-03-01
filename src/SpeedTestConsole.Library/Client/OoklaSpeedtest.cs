@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Net.Http.Headers;
 
-namespace SpeedTestConsole.Lib.Client;
+namespace SpeedTestConsole.Library.Client;
 
 /// <summary>
 /// An Ookla Speedtest implementation of the <see cref="ISpeedTestService"/> interface.

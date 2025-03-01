@@ -5,7 +5,7 @@ VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpeedTestConsole", "SpeedTestConsole\SpeedTestConsole.csproj", "{04F32099-E5D4-456C-91B8-F422724413BC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpeedTestConsole.Lib", "SpeedTestConsole.Lib\SpeedTestConsole.Lib.csproj", "{30331A29-2F59-4E1C-A239-7D82A5A865E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpeedTestConsole.Library", "SpeedTestConsole.Library\SpeedTestConsole.Library.csproj", "{30331A29-2F59-4E1C-A239-7D82A5A865E1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpeedTestConsole.Tests", "SpeedTestConsole.Tests\SpeedTestConsole.Tests.csproj", "{D19D41F3-C266-4A09-97C8-02363A5B1BAA}"
 EndProject

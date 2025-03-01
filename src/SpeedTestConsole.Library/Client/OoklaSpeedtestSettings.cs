@@ -1,4 +1,4 @@
-﻿namespace SpeedTestConsole.Lib.Client;
+﻿namespace SpeedTestConsole.Library.Client;
 
 /// <summary>
 /// Configuration unique to Ookla Speedtest.

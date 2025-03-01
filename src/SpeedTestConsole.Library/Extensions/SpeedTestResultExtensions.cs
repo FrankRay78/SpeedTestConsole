@@ -1,4 +1,4 @@
-﻿namespace SpeedTestConsole.Lib.Extensions;
+﻿namespace SpeedTestConsole.Library.Extensions;
 
 public static class SpeedTestResultExtensions
 {
