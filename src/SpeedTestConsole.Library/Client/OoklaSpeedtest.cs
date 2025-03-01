@@ -108,7 +108,7 @@ public sealed class OoklaSpeedtest : ISpeedTestService
             throw new NullReferenceException("Server url was null");
         }
 
-        var downloadUrls = GenerateDownloadUrls(server.Url);
+        var downloadUrls = GenerateDownloadUrls(server.Url, settings.DownloadSizes, settings.DownloadSizeIterations);
 
         // Download content from a specified URL and return the size of the data in bytes.
         Func<HttpClient, string, Task<int>> DownloadAndMeasureAsync = async (client, url) =>
@@ -122,7 +122,22 @@ public sealed class OoklaSpeedtest : ISpeedTestService
         return downloadResult;
     }
 
-    private async Task<SpeedTestResult> GenericTestSpeedAsync<T>(IEnumerable<T> testData,
+    public async Task<SpeedTestResult> GetUploadSpeedAsync(IServer server)
+    {
+        return await GetUploadSpeedAsync(server, (int _) => { });
+    }
+
+    public async Task<SpeedTestResult> GetUploadSpeedAsync(IServer server, Action<int> UpdateProgress)
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// Executes a generic speed test by processing a collection of test data in parallel, 
+    /// measuring total bytes processed and elapsed time.
+    /// </summary>
+    private async Task<SpeedTestResult> GenericTestSpeedAsync<T>(
+        IEnumerable<T> testData,
         Func<HttpClient, T, Task<int>> doWork,
         Action<int> UpdateProgress,
         int parallelTasks)
@@ -136,23 +151,23 @@ public sealed class OoklaSpeedtest : ISpeedTestService
 
         timer.Start();
 
-        // Create a list of tasks that will download the test data.
-        var downloadTasks = testData.Select(async data =>
+        // Create and execute tasks to process the test data in parallel.
+        var tasks = testData.Select(async data =>
         {
-            // Each task must acquire a "permit" before it can start executing.
+            // Limit concurrent executions by waiting for a permit from the semaphore.
             await throttler.WaitAsync().ConfigureAwait(false);
 
             using var httpClient = GetHttpClient();
             try
             {
+                // Perform the work and retrieve the processed byte count.
                 var size = await doWork(httpClient, data).ConfigureAwait(false);
 
+                // Safely update the progress count and report completion percentage.
                 lock (lockObject)
                 {
                     completedCount++;
-
-                    var percentageComplete = (int)(((double)completedCount / totalCount) * 100);
-
+                    int percentageComplete = (int)(((double)completedCount / totalCount) * 100);
                     UpdateProgress(percentageComplete);
                 }
 
@@ -160,19 +175,26 @@ public sealed class OoklaSpeedtest : ISpeedTestService
             }
             finally
             {
-                // Release the permit so other waiting tasks can proceed.
+                // Release the semaphore to allow another task to proceed.
                 throttler.Release();
             }
         }).ToArray();
 
-        await Task.WhenAll(downloadTasks);
+        // Wait for all tasks to complete.
+        await Task.WhenAll(tasks);
         timer.Stop();
 
-        long totalBytesProcessed = downloadTasks.Sum(task => task.Result);
-        return new SpeedTestResult() { BytesProcessed = totalBytesProcessed, ElapsedMilliseconds = timer.ElapsedMilliseconds };
+        // Compute the total bytes processed.
+        long totalBytesProcessed = tasks.Sum(task => task.Result);
+
+        return new SpeedTestResult
+        {
+            BytesProcessed = totalBytesProcessed,
+            ElapsedMilliseconds = timer.ElapsedMilliseconds
+        };
     }
 
-    #region Helper Functions
+    #region Static Helper Functions
 
     /// <summary>
     /// Generates numerous download URLs for the speed test.
@@ -182,13 +204,13 @@ public sealed class OoklaSpeedtest : ISpeedTestService
     /// http://manchester.speedtest.boundlessnetworks.uk:8080/speedtest/random1500x1500.jpg?r=1
     /// ...
     /// </example>
-    private IEnumerable<string> GenerateDownloadUrls(string serverUrl)
+    private static IEnumerable<string> GenerateDownloadUrls(string serverUrl, int[] downloadSizes, int downloadSizeIterations)
     {
         var downloadUrl = GetBaseUrl(serverUrl).Append("random{0}x{0}.jpg?r={1}");
 
-        foreach (var downloadSize in settings.DownloadSizes)
+        foreach (var downloadSize in downloadSizes)
         {
-            for (var i = 0; i < settings.DownloadSizeIterations; i++)
+            for (var i = 0; i < downloadSizeIterations; i++)
             {
                 yield return string.Format(downloadUrl, downloadSize, i);
             }

@@ -23,4 +23,19 @@ public interface ISpeedTestService
     /// <param name="UpdateProgress">An action that receives the download progress percentage (0 to 100).</param>
     /// <returns>A tuple containing bytes processed and elapsed time in milliseconds.</returns>
     public Task<SpeedTestResult> GetDownloadSpeedAsync(IServer server, Action<int> UpdateProgress);
+
+    /// <summary>
+    /// Measures the upload speed of the specified server.
+    /// </summary>
+    /// <param name="server">The server to measure upload speed from.</param>
+    /// <returns>A tuple containing bytes processed and elapsed time in milliseconds.</returns>
+    public Task<SpeedTestResult> GetUploadSpeedAsync(IServer server);
+
+    /// <summary>
+    /// Measures the upload speed of the specified server.
+    /// </summary>
+    /// <param name="server">The server to measure upload speed from.</param>
+    /// <param name="UpdateProgress">An action that receives the upload progress percentage (0 to 100).</param>
+    /// <returns>A tuple containing bytes processed and elapsed time in milliseconds.</returns>
+    public Task<SpeedTestResult> GetUploadSpeedAsync(IServer server, Action<int> UpdateProgress);
 }

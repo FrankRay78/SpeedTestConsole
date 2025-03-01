@@ -47,4 +47,22 @@ public class SpeedTestStub : ISpeedTestService
 
         return Task.FromResult<SpeedTestResult>(new SpeedTestResult() { BytesProcessed = 1000, ElapsedMilliseconds = 1000 });
     }
+
+    public Task<SpeedTestResult> GetUploadSpeedAsync(IServer server)
+    {
+        return GetUploadSpeedAsync(server, (int _) => { });
+    }
+
+    public Task<SpeedTestResult> GetUploadSpeedAsync(IServer server, Action<int> updateProgress)
+    {
+        if (updateProgress is not null)
+        {
+            updateProgress(25);
+            updateProgress(50);
+            updateProgress(75);
+            updateProgress(100);
+        }
+
+        return Task.FromResult<SpeedTestResult>(new SpeedTestResult() { BytesProcessed = 1000, ElapsedMilliseconds = 1000 });
+    }
 }
