@@ -5,6 +5,15 @@
 /// </summary>
 public class SpeedTestStub : ISpeedTestService
 {
+    private int delayMilliseconds = 0;
+
+    public SpeedTestStub() { }
+
+    public SpeedTestStub(int delayMilliseconds)
+    {
+        this.delayMilliseconds = delayMilliseconds;
+    }
+
     public Task<IServer[]> GetServersAsync()
     {
         return Task.FromResult(new IServer[]
@@ -39,9 +48,13 @@ public class SpeedTestStub : ISpeedTestService
     {
         if (updateProgress is not null)
         {
+            Task.Delay(delayMilliseconds).Wait();
             updateProgress(25);
+            Task.Delay(delayMilliseconds).Wait();
             updateProgress(50);
+            Task.Delay(delayMilliseconds).Wait();
             updateProgress(75);
+            Task.Delay(delayMilliseconds).Wait();
             updateProgress(100);
         }
 
@@ -57,12 +70,16 @@ public class SpeedTestStub : ISpeedTestService
     {
         if (updateProgress is not null)
         {
+            Task.Delay(delayMilliseconds).Wait();
             updateProgress(25);
+            Task.Delay(delayMilliseconds).Wait();
             updateProgress(50);
+            Task.Delay(delayMilliseconds).Wait();
             updateProgress(75);
+            Task.Delay(delayMilliseconds).Wait();
             updateProgress(100);
         }
 
-        return Task.FromResult<SpeedTestResult>(new SpeedTestResult() { BytesProcessed = 1000, ElapsedMilliseconds = 1000 });
+        return Task.FromResult<SpeedTestResult>(new SpeedTestResult() { BytesProcessed = 7000, ElapsedMilliseconds = 3000 });
     }
 }
