@@ -56,7 +56,7 @@ public class SpeedTestConsoleTests
     }
 
     [Fact]
-    public async Task Should_Handle_No_Download_Servers_Available_Test()
+    public async Task Should_Handle_No_Servers_Available_Test()
     {
         // Given
         var mock = new SpeedTestMock
