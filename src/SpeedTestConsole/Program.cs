@@ -26,7 +26,7 @@ public static class Program
     public static int Main(string[] args)
     {
         //var registrar = new TypeRegistrar();
-        //registrar.Register(typeof(ISpeedTestService), typeof(SpeedTestStub));
+        //registrar.RegisterInstance(typeof(ISpeedTestService), new SpeedTestStub(1000));
         //registrar.Register(typeof(IClock), typeof(ClockStub));
 
         var registrar = new TypeRegistrar();
@@ -34,7 +34,7 @@ public static class Program
         registrar.Register(typeof(ISpeedTestService), typeof(OoklaSpeedtest));
         registrar.Register(typeof(IClock), typeof(Clock));
 
-        var app = new CommandApp(registrar);
+        var app = new CommandApp<SpeedTestCommand>(registrar);
 
         app.Configure(ConfigureAction);
 
