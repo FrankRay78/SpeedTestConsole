@@ -20,8 +20,28 @@ public sealed class SpeedTestCommand : AsyncCommand<SpeedTestCommandSettings>
     {
         var server = await GetFastestServerAsync(settings);
 
-        var downloadResult = await DownloadSpeedTestAsync(server, settings);
-        var uploadResult = await UploadSpeedTestAsync(server, settings);
+
+        var speedTestResult = await PerformSpeedTestAsync(server, settings);
+
+        var downloadResult = speedTestResult.downloadResult;
+        var uploadResult = speedTestResult.uploadResult;
+
+
+        if ((settings.Verbosity & Verbosity.Debug) != 0)
+        {
+            ByteSize size; TimeSpan elapsed;
+
+            size = ByteSize.FromBytes(downloadResult.BytesProcessed);
+            elapsed = TimeSpan.FromMilliseconds(downloadResult.ElapsedMilliseconds);
+
+            console.WriteLine($"{size.ToString()} downloaded in {elapsed.Humanize()}");
+
+            size = ByteSize.FromBytes(uploadResult.BytesProcessed);
+            elapsed = TimeSpan.FromMilliseconds(uploadResult.ElapsedMilliseconds);
+
+            console.WriteLine($"{size.ToString()} uploaded in {elapsed.Humanize()}");
+        }
+
 
         if (settings.IncludeTimestamp)
         {
@@ -30,6 +50,7 @@ public sealed class SpeedTestCommand : AsyncCommand<SpeedTestCommandSettings>
 
         console.Write($"Download: {downloadResult.GetSpeedString(settings.SpeedUnit)} ");
         console.Write($"Upload: {uploadResult.GetSpeedString(settings.SpeedUnit)}");
+
 
         return 0;
     }
@@ -53,13 +74,15 @@ public sealed class SpeedTestCommand : AsyncCommand<SpeedTestCommandSettings>
         return fastest.Value.server;
     }
 
-    private async Task<SpeedTestResult> DownloadSpeedTestAsync(IServer server, SpeedTestCommandSettings settings)
+    private async Task<(SpeedTestResult downloadResult, SpeedTestResult uploadResult)> PerformSpeedTestAsync(IServer server, SpeedTestCommandSettings settings)
     {
-        SpeedTestResult result = new SpeedTestResult();
+        var downloadResult = new SpeedTestResult();
+        var uploadResult = new SpeedTestResult();
 
         if ((settings.Verbosity & Verbosity.Minimal) != 0)
         {
-            result = await speedTestClient.GetDownloadSpeedAsync(server);
+            downloadResult = await speedTestClient.GetDownloadSpeedAsync(server);
+            uploadResult = await speedTestClient.GetUploadSpeedAsync(server);
         }
         else
         {
@@ -74,70 +97,23 @@ public sealed class SpeedTestCommand : AsyncCommand<SpeedTestCommandSettings>
                 ])
                 .StartAsync(async progress =>
                 {
-                    var progressTask = progress.AddTask("Downloading", autoStart: true, maxValue: 100);
+                    var downloadProgress = progress.AddTask("Downloading", autoStart: true, maxValue: 100);
+                    var uploadProgress = progress.AddTask("Uploading", autoStart: true, maxValue: 100);
 
-                    Action<int> UpdateProgress = (int percentageComplete) =>
+                    downloadResult = await speedTestClient.GetDownloadSpeedAsync(server, (int percentageComplete) =>
                     {
-                        // Update the progress bar
-                        progressTask.Value = percentageComplete;
-                    };
+                        // Update the download progress bar
+                        downloadProgress.Value = percentageComplete;
+                    });
 
-                    result = await speedTestClient.GetDownloadSpeedAsync(server, UpdateProgress);
+                    uploadResult = await speedTestClient.GetUploadSpeedAsync(server, (int percentageComplete) =>
+                    {
+                        // Update the upload progress bar
+                        uploadProgress.Value = percentageComplete;
+                    });
                 });
         }
 
-        var size = ByteSize.FromBytes(result.BytesProcessed);
-        var elapsed = TimeSpan.FromMilliseconds(result.ElapsedMilliseconds);
-
-        if ((settings.Verbosity & Verbosity.Debug) != 0)
-        {
-            console.WriteLine($"{size.ToString()} downloaded in {elapsed.Humanize()}");
-        }
-
-        return result;
-    }
-
-    private async Task<SpeedTestResult> UploadSpeedTestAsync(IServer server, SpeedTestCommandSettings settings)
-    {
-        SpeedTestResult result = new SpeedTestResult();
-
-        if ((settings.Verbosity & Verbosity.Minimal) != 0)
-        {
-            result = await speedTestClient.GetUploadSpeedAsync(server);
-        }
-        else
-        {
-            // Graphical progress bar
-            await console.Progress()
-                .AutoClear(false)
-                .Columns(
-                [
-                    new TaskDescriptionColumn(),
-                    new ProgressBarColumn(),
-                    new PercentageColumn(),
-                ])
-                .StartAsync(async progress =>
-                {
-                    var progressTask = progress.AddTask("Uploading", autoStart: true, maxValue: 100);
-
-                    Action<int> UpdateProgress = (int percentageComplete) =>
-                    {
-                        // Update the progress bar
-                        progressTask.Value = percentageComplete;
-                    };
-
-                    result = await speedTestClient.GetUploadSpeedAsync(server, UpdateProgress);
-                });
-        }
-
-        var size = ByteSize.FromBytes(result.BytesProcessed);
-        var elapsed = TimeSpan.FromMilliseconds(result.ElapsedMilliseconds);
-
-        if ((settings.Verbosity & Verbosity.Debug) != 0)
-        {
-            console.WriteLine($"{size.ToString()} uploaded in {elapsed.Humanize()}");
-        }
-
-        return result;
+        return (downloadResult, uploadResult);
     }
 }

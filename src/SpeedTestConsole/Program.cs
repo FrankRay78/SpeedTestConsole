@@ -20,13 +20,12 @@ public static class Program
         config.SetHelpProvider(new CustomHelpProvider(config.Settings));
 
         config.AddCommand<ListServersCommand>("servers").WithDescription("Show the nearest speed test servers.");
-        config.AddCommand<DownloadSpeedCommand>("download").WithDescription("Perform an internet download speed test.");
     });
 
     public static int Main(string[] args)
     {
         //var registrar = new TypeRegistrar();
-        //registrar.RegisterInstance(typeof(ISpeedTestService), new SpeedTestStub(1000));
+        //registrar.RegisterInstance(typeof(ISpeedTestService), new SpeedTestStub(250));
         //registrar.Register(typeof(IClock), typeof(ClockStub));
 
         var registrar = new TypeRegistrar();
@@ -34,7 +33,8 @@ public static class Program
         registrar.Register(typeof(ISpeedTestService), typeof(OoklaSpeedtest));
         registrar.Register(typeof(IClock), typeof(Clock));
 
-        var app = new CommandApp<SpeedTestCommand>(registrar);
+        var app = new CommandApp<SpeedTestCommand>(registrar)
+            .WithDescription("Internet speed tester including server discovery, latency measurement, download and upload speed testing.");
 
         app.Configure(ConfigureAction);
 
