@@ -21,7 +21,7 @@ public sealed class SpeedTestCommandSettings : CommandSettings
     public SpeedUnit SpeedUnit { get; set; }
 
     [CommandOption("--verbosity")]
-    [Description("The verbosity level.\n   Minimal, Normal, Debug\nMinimal is ideal for use in batch scripts.")]
+    [Description("The verbosity level.\n   Minimal, Normal, Debug\nMinimal is ideal for batch scripts and redirected output.")]
     [DefaultValue(Verbosity.Normal)]
     public Verbosity Verbosity { get; set; }
 }
