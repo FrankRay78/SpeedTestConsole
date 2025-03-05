@@ -1,15 +1,29 @@
-﻿using SpeedTestConsole.DependencyInjection;
+﻿using Spectre.Console.Cli;
+using SpeedTestConsole.Commands;
+using SpeedTestConsole.DependencyInjection;
 
 namespace SpeedTestConsole.Tests;
 
 public class SpeedTestConsoleTests
 {
+    /// <summary>
+    /// Create the CommandAppTester and configure.
+    /// </summary>
+    private static CommandAppTester GetCommandAppTester(ITypeRegistrar? registrar = null)
+    {
+        var app = registrar == null ? 
+            new CommandAppTester(new CommandAppTesterSettings { TrimConsoleOutput = false }) :
+            new CommandAppTester(registrar, new CommandAppTesterSettings { TrimConsoleOutput = false });
+        app.SetDefaultCommand<SpeedTestCommand>("Internet speed tester including server discovery, latency measurement, download and upload speed testing.");
+        app.Configure(Program.ConfigureAction);
+        return app;
+    }
+
     [Fact]
-    public async Task Should_Display_Help_When_Run_With_No_Arguments()
+    public async Task Should_Run_Speed_Test_When_Run_With_No_Arguments()
     {
         // Given
-        var app = new CommandAppTester(new CommandAppTesterSettings { TrimConsoleOutput = false });
-        app.Configure(Program.ConfigureAction);
+        var app = GetCommandAppTester();
 
         // When
         var result = await app.RunAsync();
@@ -25,9 +39,7 @@ public class SpeedTestConsoleTests
         // Given
         var registrar = new TypeRegistrar();
         registrar.Register(typeof(ISpeedTestService), typeof(SpeedTestStub));
-
-        var app = new CommandAppTester(registrar, new CommandAppTesterSettings { TrimConsoleOutput = false });
-        app.Configure(Program.ConfigureAction);
+        var app = GetCommandAppTester(registrar);
 
         // When
         var result = await app.RunAsync("servers");
@@ -43,9 +55,7 @@ public class SpeedTestConsoleTests
         // Given
         var registrar = new TypeRegistrar();
         registrar.Register(typeof(ISpeedTestService), typeof(SpeedTestStub));
-
-        var app = new CommandAppTester(registrar, new CommandAppTesterSettings { TrimConsoleOutput = false });
-        app.Configure(Program.ConfigureAction);
+        var app = GetCommandAppTester(registrar);
 
         // When
         var result = await app.RunAsync("servers", "-l");
@@ -68,9 +78,7 @@ public class SpeedTestConsoleTests
         var registrar = new TypeRegistrar();
         registrar.RegisterInstance(typeof(ISpeedTestService), mock);
         registrar.Register(typeof(IClock), typeof(ClockStub));
-
-        var app = new CommandAppTester(registrar, new CommandAppTesterSettings { TrimConsoleOutput = false });
-        app.Configure(Program.ConfigureAction);
+        var app = GetCommandAppTester(registrar);
 
         // When
         var result = await app.RunAsync("download");
@@ -87,9 +95,7 @@ public class SpeedTestConsoleTests
         var registrar = new TypeRegistrar();
         registrar.Register(typeof(ISpeedTestService), typeof(SpeedTestStub));
         registrar.Register(typeof(IClock), typeof(ClockStub));
-
-        var app = new CommandAppTester(registrar, new CommandAppTesterSettings { TrimConsoleOutput = false });
-        app.Configure(Program.ConfigureAction);
+        var app = GetCommandAppTester(registrar);
 
         // When
         var result = await app.RunAsync("download");
@@ -109,9 +115,7 @@ public class SpeedTestConsoleTests
         var registrar = new TypeRegistrar();
         registrar.Register(typeof(ISpeedTestService), typeof(SpeedTestStub));
         registrar.Register(typeof(IClock), typeof(ClockStub));
-
-        var app = new CommandAppTester(registrar, new CommandAppTesterSettings { TrimConsoleOutput = false });
-        app.Configure(Program.ConfigureAction);
+        var app = GetCommandAppTester(registrar);
 
         // When
         var result = await app.RunAsync("download", "--verbosity", verbosity);
@@ -130,9 +134,7 @@ public class SpeedTestConsoleTests
         var registrar = new TypeRegistrar();
         registrar.Register(typeof(ISpeedTestService), typeof(SpeedTestStub));
         registrar.Register(typeof(IClock), typeof(ClockStub));
-
-        var app = new CommandAppTester(registrar, new CommandAppTesterSettings { TrimConsoleOutput = false });
-        app.Configure(Program.ConfigureAction);
+        var app = GetCommandAppTester(registrar);
 
         // When
         var result = await app.RunAsync("download", timestamp);
@@ -154,9 +156,7 @@ public class SpeedTestConsoleTests
         var registrar = new TypeRegistrar();
         registrar.RegisterInstance(typeof(ISpeedTestService), mock);
         registrar.Register(typeof(IClock), typeof(ClockStub));
-
-        var app = new CommandAppTester(registrar, new CommandAppTesterSettings { TrimConsoleOutput = false });
-        app.Configure(Program.ConfigureAction);
+        var app = GetCommandAppTester(registrar);
 
         // When
         var result = await app.RunAsync("download");
