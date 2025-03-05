@@ -20,20 +20,6 @@ public class SpeedTestConsoleTests
     }
 
     [Fact]
-    public async Task Should_Run_Speed_Test_When_Run_With_No_Arguments()
-    {
-        // Given
-        var app = GetCommandAppTester();
-
-        // When
-        var result = await app.RunAsync();
-
-        // Then
-        Assert.Equal(0, result.ExitCode);
-        await Verify(result.Output);
-    }
-
-    [Fact]
     public async Task Should_Display_Speed_Test_Servers()
     {
         // Given
@@ -66,7 +52,7 @@ public class SpeedTestConsoleTests
     }
 
     [Fact]
-    public async Task Should_Handle_No_Servers_Available_Test()
+    public async Task Should_Handle_No_Servers_Available()
     {
         // Given
         var mock = new SpeedTestMock
@@ -81,7 +67,7 @@ public class SpeedTestConsoleTests
         var app = GetCommandAppTester(registrar);
 
         // When
-        var result = await app.RunAsync("download");
+        var result = await app.RunAsync();
 
         // Then
         Assert.Equal(-1, result.ExitCode);
@@ -98,7 +84,7 @@ public class SpeedTestConsoleTests
         var app = GetCommandAppTester(registrar);
 
         // When
-        var result = await app.RunAsync("download");
+        var result = await app.RunAsync();
 
         // Then
         Assert.Equal(0, result.ExitCode);
@@ -118,7 +104,7 @@ public class SpeedTestConsoleTests
         var app = GetCommandAppTester(registrar);
 
         // When
-        var result = await app.RunAsync("download", "--verbosity", verbosity);
+        var result = await app.RunAsync("--verbosity", verbosity);
 
         // Then
         Assert.Equal(0, result.ExitCode);
@@ -137,7 +123,7 @@ public class SpeedTestConsoleTests
         var app = GetCommandAppTester(registrar);
 
         // When
-        var result = await app.RunAsync("download", timestamp);
+        var result = await app.RunAsync(timestamp);
 
         // Then
         Assert.Equal(0, result.ExitCode);
@@ -159,7 +145,7 @@ public class SpeedTestConsoleTests
         var app = GetCommandAppTester(registrar);
 
         // When
-        var result = await app.RunAsync("download");
+        var result = await app.RunAsync();
 
         // Then
         Assert.Equal(-1, result.ExitCode);
