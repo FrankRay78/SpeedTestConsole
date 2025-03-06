@@ -2,14 +2,14 @@
 
 namespace SpeedTestConsole.Commands;
 
-public sealed class DownloadSpeedCommandSettings : CommandSettings
+public sealed class SpeedTestCommandSettings : CommandSettings
 {
     [CommandOption("-t | --timestamp")]
     [Description("Include a timestamp.")]
     [DefaultValue(false)]
     public bool IncludeTimestamp { get; set; }
 
-    [CommandOption("--datetimeformat", IsHidden=true)]
+    [CommandOption("--datetimeformat", IsHidden = true)]
     [Description("The date and time format string (as defined by Microsoft.Net).")]
     [DefaultValue("yyyy'-'MM'-'dd' 'HH':'mm':'ss")]
     //ref: https://learn.microsoft.com/en-us/dotnet/standard/base-types/standard-date-and-time-format-strings
@@ -21,7 +21,7 @@ public sealed class DownloadSpeedCommandSettings : CommandSettings
     public SpeedUnit SpeedUnit { get; set; }
 
     [CommandOption("--verbosity")]
-    [Description("The verbosity level.\n   Minimal, Normal, Debug\nMinimal is ideal for use in batch scripts.")]
+    [Description("The verbosity level.\n   Minimal, Normal, Debug\nMinimal is ideal for batch scripts and redirected output.")]
     [DefaultValue(Verbosity.Normal)]
     public Verbosity Verbosity { get; set; }
 }

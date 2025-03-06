@@ -1,4 +1,4 @@
-namespace SpeedTestConsole.Lib.DataTypes;
+namespace SpeedTestConsole.Library.DataTypes;
 
 [XmlRoot("settings")]
 public sealed class ServersList

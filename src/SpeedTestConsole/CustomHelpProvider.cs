@@ -55,14 +55,4 @@ internal class CustomHelpProvider : HelpProvider
 
         return base.GetHeader(model, command);
     }
-
-    public override IEnumerable<IRenderable> GetDescription(ICommandModel model, ICommandInfo? command)
-    {
-        if (command is null)
-        {
-            command = new DummyCommand { Description = "Internet speed tester including server discovery, latency measurement, and download speed testing." };
-        }
-
-        return base.GetDescription(model, command);
-    }
 }

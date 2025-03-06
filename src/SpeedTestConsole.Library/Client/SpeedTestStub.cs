@@ -1,10 +1,19 @@
-﻿namespace SpeedTestConsole.Lib.Client;
+﻿namespace SpeedTestConsole.Library.Client;
 
 /// <summary>
 /// A stub implementation of <see cref="ISpeedTestService"/> for testing purposes.
 /// </summary>
 public class SpeedTestStub : ISpeedTestService
 {
+    private int delayMilliseconds = 0;
+
+    public SpeedTestStub() { }
+
+    public SpeedTestStub(int delayMilliseconds)
+    {
+        this.delayMilliseconds = delayMilliseconds;
+    }
+
     public Task<IServer[]> GetServersAsync()
     {
         return Task.FromResult(new IServer[]
@@ -39,12 +48,38 @@ public class SpeedTestStub : ISpeedTestService
     {
         if (updateProgress is not null)
         {
+            Task.Delay(delayMilliseconds).Wait();
             updateProgress(25);
+            Task.Delay(delayMilliseconds).Wait();
             updateProgress(50);
+            Task.Delay(delayMilliseconds).Wait();
             updateProgress(75);
+            Task.Delay(delayMilliseconds).Wait();
             updateProgress(100);
         }
 
         return Task.FromResult<SpeedTestResult>(new SpeedTestResult() { BytesProcessed = 1000, ElapsedMilliseconds = 1000 });
+    }
+
+    public Task<SpeedTestResult> GetUploadSpeedAsync(IServer server)
+    {
+        return GetUploadSpeedAsync(server, (int _) => { });
+    }
+
+    public Task<SpeedTestResult> GetUploadSpeedAsync(IServer server, Action<int> updateProgress)
+    {
+        if (updateProgress is not null)
+        {
+            Task.Delay(delayMilliseconds).Wait();
+            updateProgress(25);
+            Task.Delay(delayMilliseconds).Wait();
+            updateProgress(50);
+            Task.Delay(delayMilliseconds).Wait();
+            updateProgress(75);
+            Task.Delay(delayMilliseconds).Wait();
+            updateProgress(100);
+        }
+
+        return Task.FromResult<SpeedTestResult>(new SpeedTestResult() { BytesProcessed = 7000, ElapsedMilliseconds = 3000 });
     }
 }

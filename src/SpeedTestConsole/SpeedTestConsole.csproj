@@ -16,7 +16,7 @@
   </ItemGroup>
 	
   <ItemGroup>
-    <ProjectReference Include="..\SpeedTestConsole.Lib\SpeedTestConsole.Lib.csproj" />
+    <ProjectReference Include="..\SpeedTestConsole.Library\SpeedTestConsole.Library.csproj" />
   </ItemGroup>
 
   <ItemGroup>

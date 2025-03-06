@@ -1,4 +1,4 @@
-﻿namespace SpeedTestConsole.Lib.DataTypes;
+﻿namespace SpeedTestConsole.Library.DataTypes;
 
 public sealed class SpeedTestResult
 {

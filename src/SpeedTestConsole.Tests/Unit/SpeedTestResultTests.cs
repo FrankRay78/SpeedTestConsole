@@ -1,6 +1,4 @@
-﻿using SpeedTestConsole.Lib.Extensions;
-
-namespace SpeedTestConsole.Tests.Unit;
+﻿namespace SpeedTestConsole.Tests.Unit;
 
 public class SpeedTestResultTests
 {
