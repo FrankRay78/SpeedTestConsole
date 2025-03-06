@@ -15,9 +15,9 @@ A cross-platform command-line application for performing network speed tests, in
 
 SpeedTestConsole is not endorsed by or related to [Speedtest by Ookla](https://www.speedtest.net/) in any way, although their servers are used under the hood.
 
-The obligatory screenshot (as of 25 Jan 2025):
+The obligatory screenshot (as of 6 March 2025):
 
-![SpeedTestConsole](https://github.com/user-attachments/assets/2ffb0295-cbd9-4b00-9c30-72ff4863370d)
+![2025-03-25 SpeedTestConsole](https://github.com/user-attachments/assets/b2df7f36-f620-4683-88ad-81b913b24070)
 
 <br />
 
