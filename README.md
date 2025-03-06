@@ -11,7 +11,7 @@ An internet speed test CLI application; made beautiful with [Spectre.Console](ht
 
 
 ## About The Project
-A cross-platform command-line application for performing network speed tests, including server discovery, latency measurement, download and upload speed testing.. 
+A cross-platform command-line application for performing network speed tests, including server discovery, latency measurement, download and upload speed testing.
 
 SpeedTestConsole is not endorsed by or related to [Speedtest by Ookla](https://www.speedtest.net/) in any way, although their servers are used under the hood.
 
@@ -41,12 +41,42 @@ Then clone this repository locally and build.
 ## Usage
 `SpeedTestConsole --help` will display detailed usage instructions.
 
+```txt
+C:\>SpeedTestConsole.exe -h
+
+   _____                            __  ______                 __    ______                                  __
+  / ___/    ____   ___   ___   ____/ / /_  __/  ___    _____  / /_  / ____/  ____    ____    _____  ____    / /  ___
+  \__ \    / __ \ / _ \ / _ \ / __  /   / /    / _ \  / ___/ / __/ / /      / __ \  / __ \  / ___/ / __ \  / /  / _ \
+ ___/ /   / /_/ //  __//  __// /_/ /   / /    /  __/ (__  ) / /_  / /___   / /_/ / / / / / (__  ) / /_/ / / /  /  __/
+/____/   / .___/ \___/ \___/ \__,_/   /_/     \___/ /____/  \__/  \____/   \____/ /_/ /_/ /____/  \____/ /_/   \___/
+        /_/
+
+DESCRIPTION:
+Internet speed tester including server discovery, latency measurement, download and upload speed testing.
+
+USAGE:
+    SpeedTestConsole [OPTIONS] [COMMAND]
+
+OPTIONS:
+                       DEFAULT
+    -h, --help                          Prints help information.
+    -t, --timestamp                     Include a timestamp.
+    -u, --unit         BitsPerSecond    The speed unit.
+                                           BitsPerSecond, BytesPerSecond
+        --verbosity    Normal           The verbosity level.
+                                           Minimal, Normal, Debug
+                                        Minimal is ideal for batch scripts and redirected output.
+
+COMMANDS:
+    servers    Show the nearest speed test servers.
+```
+
 <br />
 
 
 ## Roadmap
 - [X] Download speed test
-- [ ] Upload speed test
+- [X] Upload speed test
 - [ ] User-configurable switches
    - [X] BitsPerSecond or BytesPerSecond
    - [ ] Fixed speed unit (eg. Mbps, Gbps)
@@ -55,6 +85,8 @@ Then clone this repository locally and build.
    - [ ] Maximum speed test (time)
    - [ ] Maximum speed test (size transferred)
 - [ ] Periodically repeat tests
+- [ ] Run unit tests on PR
+- [ ] NuGet package for the core library
 
 See the [open issues](https://github.com/FrankRay78/SpeedTestConsole/issues) for a full list of proposed features (and known issues).
 
