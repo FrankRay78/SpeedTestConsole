@@ -58,14 +58,16 @@ USAGE:
     SpeedTestConsole [OPTIONS] [COMMAND]
 
 OPTIONS:
-                       DEFAULT
-    -h, --help                          Prints help information.
-    -t, --timestamp                     Include a timestamp.
-    -u, --unit         BitsPerSecond    The speed unit.
-                                           BitsPerSecond, BytesPerSecond
-        --verbosity    Normal           The verbosity level.
-                                           Minimal, Normal, Debug
-                                        Minimal is ideal for batch scripts and redirected output.
+                         DEFAULT
+    -h, --help                            Prints help information.
+        --no-download                     Do not perform download test.
+        --no-upload                       Do not perform upload test.
+    -t, --timestamp                       Include a timestamp.
+    -u, --unit           BitsPerSecond    The speed unit.
+                                             BitsPerSecond, BytesPerSecond
+        --verbosity      Normal           The verbosity level.
+                                             Minimal, Normal, Debug
+                                          Minimal is ideal for batch scripts and redirected output.
 
 COMMANDS:
     servers    Show the nearest speed test servers.

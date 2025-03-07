@@ -131,6 +131,40 @@ public class SpeedTestConsoleTests
     }
 
     [Fact]
+    public async Task Should_Not_Perform_Download_Speed_Test()
+    {
+        // Given
+        var registrar = new TypeRegistrar();
+        registrar.Register(typeof(ISpeedTestService), typeof(SpeedTestStub));
+        registrar.Register(typeof(IClock), typeof(ClockStub));
+        var app = GetCommandAppTester(registrar);
+
+        // When
+        var result = await app.RunAsync("--no-download");
+
+        // Then
+        Assert.Equal(0, result.ExitCode);
+        await Verify(result.Output);
+    }
+
+    [Fact]
+    public async Task Should_Not_Perform_Upload_Speed_Test()
+    {
+        // Given
+        var registrar = new TypeRegistrar();
+        registrar.Register(typeof(ISpeedTestService), typeof(SpeedTestStub));
+        registrar.Register(typeof(IClock), typeof(ClockStub));
+        var app = GetCommandAppTester(registrar);
+
+        // When
+        var result = await app.RunAsync("--no-upload");
+
+        // Then
+        Assert.Equal(0, result.ExitCode);
+        await Verify(result.Output);
+    }
+
+    [Fact]
     public async Task Should_Handle_Unknown_Exceptions()
     {
         // Given
