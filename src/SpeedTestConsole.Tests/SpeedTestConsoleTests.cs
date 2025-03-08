@@ -75,7 +75,7 @@ public class SpeedTestConsoleTests
     }
 
     [Fact]
-    public async Task Should_Perform_Download_Speed_Test()
+    public async Task Should_Perform_Speed_Test()
     {
         // Given
         var registrar = new TypeRegistrar();
@@ -95,7 +95,7 @@ public class SpeedTestConsoleTests
     [InlineData("Normal")]
     [InlineData("Debug")]
     [Theory]
-    public async Task Should_Perform_Download_Speed_Test_With_Verbosity(string verbosity)
+    public async Task Should_Perform_Speed_Test_With_Verbosity(string verbosity)
     {
         // Given
         var registrar = new TypeRegistrar();
@@ -114,7 +114,7 @@ public class SpeedTestConsoleTests
     [InlineData("-t")]
     [InlineData("--timestamp")]
     [Theory]
-    public async Task Should_Perform_Download_Speed_Test_With_Timestamp(string timestamp)
+    public async Task Should_Perform_Speed_Test_With_Timestamp(string timestamp)
     {
         // Given
         var registrar = new TypeRegistrar();
