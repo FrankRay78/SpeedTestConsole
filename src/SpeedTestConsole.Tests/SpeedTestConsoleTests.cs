@@ -92,7 +92,7 @@ public class SpeedTestConsoleTests
     }
 
     [Fact]
-    public async Task Should_Perform_Speed_Test_With_CSV_Output()
+    public async Task Should_Perform_Speed_Test_With_CSV()
     {
         // Given
         var registrar = new TypeRegistrar();
@@ -101,11 +101,31 @@ public class SpeedTestConsoleTests
         var app = GetCommandAppTester(registrar);
 
         // When
-        var result = await app.RunAsync("--csv", "-t");
+        var result = await app.RunAsync("--csv");
 
         // Then
         Assert.Equal(0, result.ExitCode);
         await Verify(result.Output);
+    }
+
+    [InlineData(',')]
+    [InlineData(';')]
+    [InlineData('\t')]
+    [Theory]
+    public async Task Should_Perform_Speed_Test_With_CSV_Delimiter(char delimiter)
+    {
+        // Given
+        var registrar = new TypeRegistrar();
+        registrar.Register(typeof(ISpeedTestService), typeof(SpeedTestStub));
+        registrar.Register(typeof(IClock), typeof(ClockStub));
+        var app = GetCommandAppTester(registrar);
+
+        // When
+        var result = await app.RunAsync("--csv", "--csv-delimiter", delimiter.ToString());
+
+        // Then
+        Assert.Equal(0, result.ExitCode);
+        await Verify(result.Output).UseParameters(delimiter);
     }
 
     [InlineData("Minimal")]

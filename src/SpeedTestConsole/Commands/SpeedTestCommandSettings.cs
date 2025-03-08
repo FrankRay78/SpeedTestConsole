@@ -5,7 +5,7 @@ namespace SpeedTestConsole.Commands;
 public sealed class SpeedTestCommandSettings : CommandSettings
 {
     [CommandOption("--csv")]
-    [Description("Display minimal output in CSV format.")]
+    [Description("Display minimal output in CSV format (always includes timestamp).")]
     [DefaultValue(false)]
     public bool CSV { get; set; }
 

@@ -40,10 +40,11 @@ public sealed class SpeedTestCommand : AsyncCommand<SpeedTestCommandSettings>
         // CSV output overrides the display options below
         if (settings.CSV)
         {
-            console.WriteLine("Timestamp,Download,Upload");
-            console.Write($"{clock.Now.ToString(settings.DateTimeFormat)}," +
-                $"{downloadResult.GetSpeedString(settings.SpeedUnit)}," +
-                $"{uploadResult.GetSpeedString(settings.SpeedUnit)}");
+            console.WriteLine(string.Join(settings.CSVDelimiter, "Timestamp", "Download", "Upload"));
+            console.WriteLine(string.Join(settings.CSVDelimiter, 
+                clock.Now.ToString(settings.DateTimeFormat), 
+                downloadResult.GetSpeedString(settings.SpeedUnit), 
+                uploadResult.GetSpeedString(settings.SpeedUnit)));
 
             return 0;
         }
@@ -82,6 +83,7 @@ public sealed class SpeedTestCommand : AsyncCommand<SpeedTestCommandSettings>
         {
             console.Write($"Upload: {uploadResult.GetSpeedString(settings.SpeedUnit)}");
         }
+        console.WriteLine("");
 
 
         return 0;
