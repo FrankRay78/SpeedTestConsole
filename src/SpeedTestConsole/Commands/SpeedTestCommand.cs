@@ -22,7 +22,7 @@ public sealed class SpeedTestCommand : AsyncCommand<SpeedTestCommandSettings>
         // Get the speed test server
         var fastest = await GetFastestServerAsync(settings);
 
-        if ((settings.Verbosity & (Verbosity.Normal | Verbosity.Debug)) != 0)
+        if (!settings.CSV && (settings.Verbosity & (Verbosity.Normal | Verbosity.Debug)) != 0)
         {
             console.WriteLine($"{fastest.server.Sponsor} ({fastest.latency} ms)");
         }
@@ -35,6 +35,18 @@ public sealed class SpeedTestCommand : AsyncCommand<SpeedTestCommandSettings>
 
         // Perform speed test
         var (downloadResult, uploadResult) = await PerformSpeedTestAsync(fastest.server, settings);
+
+
+        // CSV output overrides the display options below
+        if (settings.CSV)
+        {
+            console.WriteLine("Timestamp,Download,Upload");
+            console.Write($"{clock.Now.ToString(settings.DateTimeFormat)}," +
+                $"{downloadResult.GetSpeedString(settings.SpeedUnit)}," +
+                $"{uploadResult.GetSpeedString(settings.SpeedUnit)}");
+
+            return 0;
+        }
 
 
         if ((settings.Verbosity & Verbosity.Debug) != 0)
