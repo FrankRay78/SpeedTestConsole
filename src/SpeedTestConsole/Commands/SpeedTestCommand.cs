@@ -22,7 +22,7 @@ public sealed class SpeedTestCommand : AsyncCommand<SpeedTestCommandSettings>
         // Get the speed test server
         var fastest = await GetFastestServerAsync(settings);
 
-        if (!settings.CSV && (settings.Verbosity & (Verbosity.Normal | Verbosity.Debug)) != 0)
+        if (!settings.CSV && ((settings.Verbosity & (Verbosity.Normal | Verbosity.Debug)) != 0))
         {
             console.WriteLine($"{fastest.server.Sponsor} ({fastest.latency} ms)");
         }
@@ -40,11 +40,22 @@ public sealed class SpeedTestCommand : AsyncCommand<SpeedTestCommandSettings>
         // CSV output overrides the display options below
         if (settings.CSV)
         {
-            console.WriteLine(string.Join(settings.CSVDelimiter, "Timestamp", "Download", "Upload"));
-            console.WriteLine(string.Join(settings.CSVDelimiter, 
-                clock.Now.ToString(settings.DateTimeFormat), 
-                downloadResult.GetSpeedString(settings.SpeedUnit), 
-                uploadResult.GetSpeedString(settings.SpeedUnit)));
+            // Always including the timestamp in the CSV output seems reasonable
+            settings.IncludeTimestamp = true;
+
+            console.WriteLine(string.Join(settings.CSVDelimiter, new[]
+            {
+                settings.IncludeTimestamp ? "Timestamp" : null,
+                !settings.NoDownload ? "Download" : null,
+                !settings.NoUpload ? "Upload" : null
+            }.Where(s => !string.IsNullOrEmpty(s))));
+
+            console.WriteLine(string.Join(settings.CSVDelimiter, new[]
+            {
+                settings.IncludeTimestamp ? clock.Now.ToString(settings.DateTimeFormat) : null,
+                !settings.NoDownload ? downloadResult.GetSpeedString(settings.SpeedUnit) : null,
+                !settings.NoUpload ? uploadResult.GetSpeedString(settings.SpeedUnit) : null
+            }.Where(s => !string.IsNullOrEmpty(s))));
 
             return 0;
         }
@@ -71,19 +82,12 @@ public sealed class SpeedTestCommand : AsyncCommand<SpeedTestCommandSettings>
 
 
         // Display speed test result
-        if (settings.IncludeTimestamp)
+        console.WriteLine(string.Join(" ", new[]
         {
-            console.Write($"{clock.Now.ToString(settings.DateTimeFormat)} ");
-        }
-        if (!settings.NoDownload)
-        {
-            console.Write($"Download: {downloadResult.GetSpeedString(settings.SpeedUnit)} ");
-        }
-        if (!settings.NoUpload)
-        {
-            console.Write($"Upload: {uploadResult.GetSpeedString(settings.SpeedUnit)}");
-        }
-        console.WriteLine("");
+            settings.IncludeTimestamp ? clock.Now.ToString(settings.DateTimeFormat) : null,
+            !settings.NoDownload ? $"Download: {downloadResult.GetSpeedString(settings.SpeedUnit)}" : null,
+            !settings.NoUpload ? $"Upload: {uploadResult.GetSpeedString(settings.SpeedUnit)}" : null
+        }.Where(s => !string.IsNullOrEmpty(s))));
 
 
         return 0;
@@ -107,7 +111,7 @@ public sealed class SpeedTestCommand : AsyncCommand<SpeedTestCommandSettings>
         var downloadResult = new SpeedTestResult();
         var uploadResult = new SpeedTestResult();
 
-        if ((settings.Verbosity & Verbosity.Minimal) != 0)
+        if (settings.CSV || ((settings.Verbosity & Verbosity.Minimal) != 0))
         {
             if (!settings.NoDownload) downloadResult = await speedTestClient.GetDownloadSpeedAsync(server);
             if (!settings.NoUpload) uploadResult = await speedTestClient.GetUploadSpeedAsync(server);
