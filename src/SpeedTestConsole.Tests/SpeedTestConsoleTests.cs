@@ -108,6 +108,40 @@ public class SpeedTestConsoleTests
         await Verify(result.Output);
     }
 
+    [Fact]
+    public async Task Should_Perform_Speed_Test_With_CSV_No_Download()
+    {
+        // Given
+        var registrar = new TypeRegistrar();
+        registrar.Register(typeof(ISpeedTestService), typeof(SpeedTestStub));
+        registrar.Register(typeof(IClock), typeof(ClockStub));
+        var app = GetCommandAppTester(registrar);
+
+        // When
+        var result = await app.RunAsync("--csv", "--no-download");
+
+        // Then
+        Assert.Equal(0, result.ExitCode);
+        await Verify(result.Output);
+    }
+
+    [Fact]
+    public async Task Should_Perform_Speed_Test_With_CSV_No_Upload()
+    {
+        // Given
+        var registrar = new TypeRegistrar();
+        registrar.Register(typeof(ISpeedTestService), typeof(SpeedTestStub));
+        registrar.Register(typeof(IClock), typeof(ClockStub));
+        var app = GetCommandAppTester(registrar);
+
+        // When
+        var result = await app.RunAsync("--csv", "--no-upload");
+
+        // Then
+        Assert.Equal(0, result.ExitCode);
+        await Verify(result.Output);
+    }
+
     [InlineData(',')]
     [InlineData(';')]
     [InlineData('\t')]
