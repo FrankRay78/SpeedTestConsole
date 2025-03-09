@@ -4,6 +4,16 @@ namespace SpeedTestConsole.Commands;
 
 public sealed class SpeedTestCommandSettings : CommandSettings
 {
+    [CommandOption("--csv")]
+    [Description("Display minimal output in CSV format (always includes timestamp).")]
+    [DefaultValue(false)]
+    public bool CSV { get; set; }
+
+    [CommandOption("--csv-delimiter")]
+    [Description("Single character delimiter to use in CSV output.")]
+    [DefaultValue(',')]
+    public char CSVDelimiter { get; set; }
+
     [CommandOption("--no-download")]
     [Description("Do not perform download test.")]
     [DefaultValue(false)]
