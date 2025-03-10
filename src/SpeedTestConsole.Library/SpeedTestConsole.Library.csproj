@@ -6,8 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="ByteSize" Version="2.1.2" />
-  </ItemGroup>
-
 </Project>

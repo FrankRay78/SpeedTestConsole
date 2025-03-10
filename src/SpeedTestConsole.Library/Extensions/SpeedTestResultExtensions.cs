@@ -27,38 +27,49 @@ public static class SpeedTestResultExtensions
 
         if (bitsPerSecond < 1000)
         {
-            return $"{bitsPerSecond.ToString("0.##")} bps";
+            return $"{bitsPerSecond:0.##} bps";
         }
         else if (bitsPerSecond < 1000000)
         {
-            return $"{(bitsPerSecond / 1000).ToString("0.##")} Kbps";
+            return $"{(bitsPerSecond / 1000):0.##} Kbps";
         }
         else if (bitsPerSecond < 1000000000)
         {
-            return $"{(bitsPerSecond / 1000000).ToString("0.##")} Mbps";
+            return $"{(bitsPerSecond / 1000000):0.##} Mbps";
         }
         else if (bitsPerSecond < 1000000000000)
         {
-            return $"{(bitsPerSecond / 1000000000).ToString("0.##")} Gbps";
+            return $"{(bitsPerSecond / 1000000000):0.##} Gbps";
         }
         else
         {
-            return $"{(bitsPerSecond / 1000000000000).ToString("0.##")} Tbps";
+            return $"{(bitsPerSecond / 1000000000000):0.##} Tbps";
         }
     }
 
     private static string GetSpeedString_BytesPerSecond(SpeedTestResult result)
     {
-        var bytesPerSecond = ByteSize.FromBytes(result.BytesProcessed / ((double)result.ElapsedMilliseconds / 1000));
+        double bytesPerSecond = result.BytesProcessed / ((double)result.ElapsedMilliseconds / 1000);
 
-        // Avoid ByteSize reverting to bits
-        if (bytesPerSecond.Bytes < 1)
+        if (bytesPerSecond < 1000)
         {
-            return $"{bytesPerSecond.ToString("0.## B")}ps";
+            return $"{bytesPerSecond:0.##} Bps";
+        }
+        else if (bytesPerSecond < 1000000)
+        {
+            return $"{(bytesPerSecond / 1000):0.##} KBps";
+        }
+        else if (bytesPerSecond < 1000000000)
+        {
+            return $"{(bytesPerSecond / 1000000):0.##} MBps";
+        }
+        else if (bytesPerSecond < 1000000000000)
+        {
+            return $"{(bytesPerSecond / 1000000000):0.##} GBps";
         }
         else
         {
-            return $"{bytesPerSecond.ToString("0.##")}ps";
+            return $"{(bytesPerSecond / 1000000000000):0.##} TBps";
         }
     }
 }
