@@ -5,7 +5,7 @@ public static class SpeedTestResultExtensions
     /// <summary>
     /// Calculate the speed
     /// </summary>
-    public static string GetSpeedString(this SpeedTestResult result, SpeedUnit unit)
+    public static string GetSpeedString(this SpeedTestResult result, SpeedUnit unit, SpeedUnitSystem unitSystem)
     {
         if (unit == SpeedUnit.BitsPerSecond)
         {

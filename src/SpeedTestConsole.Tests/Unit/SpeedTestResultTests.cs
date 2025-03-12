@@ -23,13 +23,13 @@ public class SpeedTestResultTests
     [InlineData(1, 32000, "0.25 bps")]
     [InlineData(1, 64000, "0.13 bps")]
     [Theory]
-    public void Should_Calculate_Bits_Per_Second_Correctly(long bytesProcessed, long elapsedMilliseconds, string expected)
+    public void Should_Calculate_Bits_Per_Second_Correctly_SI(long bytesProcessed, long elapsedMilliseconds, string expected)
     {
         // Given
         var result = new SpeedTestResult { BytesProcessed = bytesProcessed, ElapsedMilliseconds = elapsedMilliseconds };
 
         // When
-        var speedString = result.GetSpeedString(SpeedUnit.BitsPerSecond);
+        var speedString = result.GetSpeedString(SpeedUnit.BitsPerSecond, SpeedUnitSystem.SI);
 
         // Then
         Assert.Equal($"{expected}", speedString);
@@ -59,13 +59,13 @@ public class SpeedTestResultTests
     [InlineData(1, 4000, "0.25 Bps")]
     [InlineData(1, 8000, "0.13 Bps")]
     [Theory]
-    public void Should_Calculate_Bytes_Per_Second_Correctly(long bytesProcessed, long elapsedMilliseconds, string expected)
+    public void Should_Calculate_Bytes_Per_Second_Correctly_SI(long bytesProcessed, long elapsedMilliseconds, string expected)
     {
         // Given
         var result = new SpeedTestResult { BytesProcessed = bytesProcessed, ElapsedMilliseconds = elapsedMilliseconds };
 
         // When
-        var speedString = result.GetSpeedString(SpeedUnit.BytesPerSecond);
+        var speedString = result.GetSpeedString(SpeedUnit.BytesPerSecond, SpeedUnitSystem.SI);
 
         // Then
         Assert.Equal($"{expected}", speedString);

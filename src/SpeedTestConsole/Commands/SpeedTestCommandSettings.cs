@@ -36,12 +36,17 @@ public sealed class SpeedTestCommandSettings : CommandSettings
     public string? DateTimeFormat { get; set; }
 
     [CommandOption("-u | --unit")]
-    [Description("The speed unit.\n   BitsPerSecond, BytesPerSecond")]
+    [Description("The speed unit. <BitsPerSecond, BytesPerSecond>")]
     [DefaultValue(SpeedUnit.BitsPerSecond)]
     public SpeedUnit SpeedUnit { get; set; }
 
+    [CommandOption("--unit-system")]
+    [Description("The speed unit system. <SI, IEC>\nSI steps up in powers of 1000 (KB, MB, GB), common in networking, while IEC uses powers of 1024 (KiB, MiB, GiB), standard in computing and storage.")]
+    [DefaultValue(SpeedUnitSystem.SI)]
+    public SpeedUnitSystem SpeedUnitSystem { get; set; }
+
     [CommandOption("--verbosity")]
-    [Description("The verbosity level.\n   Minimal, Normal, Debug\nMinimal is ideal for batch scripts and redirected output.")]
+    [Description("The verbosity level. <Minimal, Normal, Debug>\nMinimal is ideal for batch scripts and redirected output.")]
     [DefaultValue(Verbosity.Normal)]
     public Verbosity Verbosity { get; set; }
 }

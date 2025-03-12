@@ -38,14 +38,14 @@ public static class Program
 
     public static int Main(string[] args)
     {
-        //var registrar = new TypeRegistrar();
-        //registrar.RegisterInstance(typeof(ISpeedTestService), new SpeedTestStub(250));
-        //registrar.Register(typeof(IClock), typeof(ClockStub));
-
         var registrar = new TypeRegistrar();
-        registrar.Register(typeof(OoklaSpeedtestSettings), typeof(OoklaSpeedtestSettings));
-        registrar.Register(typeof(ISpeedTestService), typeof(OoklaSpeedtest));
-        registrar.Register(typeof(IClock), typeof(Clock));
+        registrar.RegisterInstance(typeof(ISpeedTestService), new SpeedTestStub(250));
+        registrar.Register(typeof(IClock), typeof(ClockStub));
+
+        //var registrar = new TypeRegistrar();
+        //registrar.Register(typeof(OoklaSpeedtestSettings), typeof(OoklaSpeedtestSettings));
+        //registrar.Register(typeof(ISpeedTestService), typeof(OoklaSpeedtest));
+        //registrar.Register(typeof(IClock), typeof(Clock));
 
         var app = GetCommandApp(registrar);
         var result = app.Run(args);
