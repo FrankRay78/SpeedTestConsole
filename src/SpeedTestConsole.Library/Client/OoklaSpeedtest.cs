@@ -17,6 +17,7 @@ public sealed class OoklaSpeedtest : ISpeedTestService
         this.settings = settings;
     }
 
+    /// <inheritdoc/>
     public async Task<IServer[]> GetServersAsync()
     {
         using var httpClient = GetHttpClient();
@@ -24,6 +25,7 @@ public sealed class OoklaSpeedtest : ISpeedTestService
         return serversXml.DeserializeFromXml<ServersList>()?.Servers ?? Array.Empty<Server>();
     }
 
+    /// <inheritdoc/>
     public async Task<int?> GetServerLatencyAsync(IServer server)
     {
         return await GetServerLatencyAsync(server, settings.DefaultHttpTimeoutMilliseconds, settings.LatencyTestIterations);
@@ -74,6 +76,7 @@ public sealed class OoklaSpeedtest : ISpeedTestService
         return latency;
     }
 
+    /// <inheritdoc/>
     public async Task<(IServer server, int latency)?> GetFastestServerByLatencyAsync(IServer[] servers)
     {
         int fastestLatency = settings.DefaultHttpTimeoutMilliseconds;
@@ -98,11 +101,13 @@ public sealed class OoklaSpeedtest : ISpeedTestService
         return (fastestServer == null ? null : (fastestServer, fastestLatency));
     }
 
+    /// <inheritdoc/>
     public async Task<SpeedTestResult> GetDownloadSpeedAsync(IServer server)
     {
         return await GetDownloadSpeedAsync(server, (int _) => { });
     }
 
+    /// <inheritdoc/>
     public async Task<SpeedTestResult> GetDownloadSpeedAsync(IServer server, Action<int> UpdateProgress)
     {
         if (string.IsNullOrWhiteSpace(server.Url))
@@ -124,11 +129,13 @@ public sealed class OoklaSpeedtest : ISpeedTestService
         return downloadResult;
     }
 
+    /// <inheritdoc/>
     public async Task<SpeedTestResult> GetUploadSpeedAsync(IServer server)
     {
         return await GetUploadSpeedAsync(server, (int _) => { });
     }
 
+    /// <inheritdoc/>
     public async Task<SpeedTestResult> GetUploadSpeedAsync(IServer server, Action<int> UpdateProgress)
     {
         if (string.IsNullOrWhiteSpace(server.Url))

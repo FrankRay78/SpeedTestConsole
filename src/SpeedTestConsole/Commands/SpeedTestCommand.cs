@@ -1,6 +1,6 @@
 ﻿using ByteSizeLib;
 using Humanizer;
-using System.Diagnostics.CodeAnalysis;
+using SpeedTestConsole.Library.Extensions;
 
 namespace SpeedTestConsole.Commands;
 
@@ -53,8 +53,8 @@ public sealed class SpeedTestCommand : AsyncCommand<SpeedTestCommandSettings>
             console.WriteLine(string.Join(settings.CSVDelimiter, new[]
             {
                 settings.IncludeTimestamp ? clock.Now.ToString(settings.DateTimeFormat) : null,
-                !settings.NoDownload ? downloadResult.GetSpeedString(settings.SpeedUnit) : null,
-                !settings.NoUpload ? uploadResult.GetSpeedString(settings.SpeedUnit) : null
+                !settings.NoDownload ? downloadResult.GetSpeedString(settings.SpeedUnit, settings.SpeedUnitSystem) : null,
+                !settings.NoUpload ? uploadResult.GetSpeedString(settings.SpeedUnit, settings.SpeedUnitSystem) : null
             }.Where(s => !string.IsNullOrEmpty(s))));
 
             return 0;
@@ -85,9 +85,15 @@ public sealed class SpeedTestCommand : AsyncCommand<SpeedTestCommandSettings>
         console.WriteLine(string.Join(" ", new[]
         {
             settings.IncludeTimestamp ? clock.Now.ToString(settings.DateTimeFormat) : null,
-            !settings.NoDownload ? $"Download: {downloadResult.GetSpeedString(settings.SpeedUnit)}" : null,
-            !settings.NoUpload ? $"Upload: {uploadResult.GetSpeedString(settings.SpeedUnit)}" : null
+            !settings.NoDownload ? $"Download: {downloadResult.GetSpeedString(settings.SpeedUnit, settings.SpeedUnitSystem)}" : null,
+            !settings.NoUpload ? $"Upload: {uploadResult.GetSpeedString(settings.SpeedUnit, settings.SpeedUnitSystem)}" : null
         }.Where(s => !string.IsNullOrEmpty(s))));
+
+
+        if ((settings.Verbosity & (Verbosity.Normal | Verbosity.Debug)) != 0)
+        {
+            console.WriteLine("\nTry 'SpeedTestConsole --help' for more information.");
+        }
 
 
         return 0;

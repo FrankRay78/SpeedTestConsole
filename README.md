@@ -11,7 +11,8 @@ An internet speed test CLI application; made beautiful with [Spectre.Console](ht
 
 
 ## About The Project
-A cross-platform command-line application for performing network speed tests, including server discovery, latency measurement, download and upload speed testing.
+A cross-platform command-line application for performing network speed tests, including server discovery, latency measurement, download and upload speed testing. 
+The core speed test library has also been designed for reuse in other projects and applications.
 
 SpeedTestConsole is not endorsed by or related to [Speedtest by Ookla](https://www.speedtest.net/) in any way, although their servers are used under the hood.
 
@@ -42,7 +43,7 @@ Then clone this repository locally and build.
 `SpeedTestConsole --help` will display detailed usage instructions.
 
 ```txt
-C:\>SpeedTestConsole.exe -h
+C:\>SpeedTestConsole.exe --help
 
    _____                            __  ______                 __    ______                                  __
   / ___/    ____   ___   ___   ____/ / /_  __/  ___    _____  / /_  / ____/  ____    ____    _____  ____    / /  ___
@@ -65,10 +66,11 @@ OPTIONS:
         --no-download                       Do not perform download test.
         --no-upload                         Do not perform upload test.
     -t, --timestamp                         Include a timestamp.
-    -u, --unit             BitsPerSecond    The speed unit.
-                                               BitsPerSecond, BytesPerSecond
-        --verbosity        Normal           The verbosity level.
-                                               Minimal, Normal, Debug
+    -u, --unit             BitsPerSecond    The speed unit. <BitsPerSecond, BytesPerSecond>
+        --unit-system      SI               The speed unit system. <SI, IEC>
+                                            SI steps up in powers of 1000 (KB, MB, GB), common in networking, while IEC
+                                            uses powers of 1024 (KiB, MiB, GiB), standard in computing and storage.
+        --verbosity        Normal           The verbosity level. <Minimal, Normal, Debug>
                                             Minimal is ideal for batch scripts and redirected output.
 
 COMMANDS:
@@ -83,6 +85,7 @@ COMMANDS:
 - [X] Upload speed test
 - [ ] User-configurable switches
    - [X] BitsPerSecond or BytesPerSecond
+   - [X] SI or IEC
    - [ ] Fixed speed unit (eg. Mbps, Gbps)
    - [X] Verbosity of output
    - [X] ~~`--plain` switch for minimal output~~ (nb. implemented by verbosity switch)
