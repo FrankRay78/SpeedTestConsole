@@ -2,74 +2,40 @@
 
 public static class SpeedTestResultExtensions
 {
+    private static readonly string[] SI_BitUnits = { "bps", "Kbps", "Mbps", "Gbps", "Tbps", "Pbps" };
+    private static readonly string[] SI_ByteUnits = { "Bps", "KBps", "MBps", "GBps", "TBps", "PBps" };
+
+    private static readonly string[] IEC_BitUnits = { "bps", "Kibps", "Mibps", "Gibps", "Tibps", "Pibps" };
+    private static readonly string[] IEC_ByteUnits = { "Bps", "KiBps", "MiBps", "GiBps", "TiBps", "PiBps" };
+
     /// <summary>
-    /// Calculate the speed
+    /// Calculates and formats the speed string based on the given speed unit and unit system.
     /// </summary>
     public static string GetSpeedString(this SpeedTestResult result, SpeedUnit unit, SpeedUnitSystem unitSystem)
     {
-        if (unit == SpeedUnit.BitsPerSecond)
-        {
-            return GetSpeedString_BitsPerSecond(result);
-        }
-        else if (unit == SpeedUnit.BytesPerSecond)
-        {
-            return GetSpeedString_BytesPerSecond(result);
-        }
-        else
-        {
-            throw new Exception($"Unknown speed unit: {nameof(unit)}");
-        }
+        bool isBits = unit == SpeedUnit.BitsPerSecond;
+        double divisor = unitSystem == SpeedUnitSystem.IEC ? 1024 : 1000;
+
+        double speed = isBits
+            ? (result.BytesProcessed * 8) / ((double)result.ElapsedMilliseconds / 1000)
+            : result.BytesProcessed / ((double)result.ElapsedMilliseconds / 1000);
+
+        return FormatSpeed(speed, isBits, unitSystem, divisor);
     }
 
-    private static string GetSpeedString_BitsPerSecond(SpeedTestResult result)
+    private static string FormatSpeed(double speed, bool isBits, SpeedUnitSystem unitSystem, double divisor)
     {
-        var bitsPerSecond = (result.BytesProcessed * 8) / ((double)result.ElapsedMilliseconds / 1000);
+        string[] units = isBits
+            ? (unitSystem == SpeedUnitSystem.IEC ? IEC_BitUnits : SI_BitUnits)
+            : (unitSystem == SpeedUnitSystem.IEC ? IEC_ByteUnits : SI_ByteUnits);
 
-        if (bitsPerSecond < 1000)
+        int index = 0;
+        while (Math.Round(speed, 2) >= divisor && index < units.Length - 1)
         {
-            return $"{bitsPerSecond:0.##} bps";
+            speed /= divisor;
+            index++;
         }
-        else if (bitsPerSecond < 1000000)
-        {
-            return $"{(bitsPerSecond / 1000):0.##} Kbps";
-        }
-        else if (bitsPerSecond < 1000000000)
-        {
-            return $"{(bitsPerSecond / 1000000):0.##} Mbps";
-        }
-        else if (bitsPerSecond < 1000000000000)
-        {
-            return $"{(bitsPerSecond / 1000000000):0.##} Gbps";
-        }
-        else
-        {
-            return $"{(bitsPerSecond / 1000000000000):0.##} Tbps";
-        }
-    }
 
-    private static string GetSpeedString_BytesPerSecond(SpeedTestResult result)
-    {
-        double bytesPerSecond = result.BytesProcessed / ((double)result.ElapsedMilliseconds / 1000);
-
-        if (bytesPerSecond < 1000)
-        {
-            return $"{bytesPerSecond:0.##} Bps";
-        }
-        else if (bytesPerSecond < 1000000)
-        {
-            return $"{(bytesPerSecond / 1000):0.##} KBps";
-        }
-        else if (bytesPerSecond < 1000000000)
-        {
-            return $"{(bytesPerSecond / 1000000):0.##} MBps";
-        }
-        else if (bytesPerSecond < 1000000000000)
-        {
-            return $"{(bytesPerSecond / 1000000000):0.##} GBps";
-        }
-        else
-        {
-            return $"{(bytesPerSecond / 1000000000000):0.##} TBps";
-        }
+        return $"{speed.ToString("0.##")} {units[index]}";
     }
 }

@@ -201,6 +201,27 @@ public class SpeedTestConsoleTests
         await Verify(result.Output).DisableRequireUniquePrefix();
     }
 
+    [InlineData(SpeedUnit.BytesPerSecond, SpeedUnitSystem.SI)]
+    [InlineData(SpeedUnit.BytesPerSecond, SpeedUnitSystem.IEC)]
+    [InlineData(SpeedUnit.BitsPerSecond, SpeedUnitSystem.SI)]
+    [InlineData(SpeedUnit.BitsPerSecond, SpeedUnitSystem.IEC)]
+    [Theory]
+    public async Task Should_Perform_Speed_Test_With_Units(SpeedUnit unit, SpeedUnitSystem unitSystem)
+    {
+        // Given
+        var registrar = new TypeRegistrar();
+        registrar.Register(typeof(ISpeedTestService), typeof(SpeedTestStub));
+        registrar.Register(typeof(IClock), typeof(ClockStub));
+        var app = GetCommandAppTester(registrar);
+
+        // When
+        var result = await app.RunAsync("--unit", unit.ToString(), "--unit-system", unitSystem.ToString());
+
+        // Then
+        Assert.Equal(0, result.ExitCode);
+        await Verify(result.Output).UseParameters(unit, unitSystem);
+    }
+
     [Fact]
     public async Task Should_Not_Perform_Download_Speed_Test()
     {
